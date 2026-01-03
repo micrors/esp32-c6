@@ -1,0 +1,1595 @@
+<!DOCTYPE HTML>
+<html lang="en" class="dark sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>Embedded Rust Basics</title>
+        <meta name="robots" content="noindex">
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="Embedded Rust (no_std) on esp32-c6.">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="favicon-de23e50b.svg">
+        <link rel="shortcut icon" href="favicon-8114d1fc.png">
+        <link rel="stylesheet" href="css/variables-8adf115d.css">
+        <link rel="stylesheet" href="css/general-2459343d.css">
+        <link rel="stylesheet" href="css/chrome-ae938929.css">
+        <link rel="stylesheet" href="css/print-9e4910d8.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="fonts/fonts-9644e21d.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" id="mdbook-highlight-css" href="highlight-493f70e1.css">
+        <link rel="stylesheet" id="mdbook-tomorrow-night-css" href="tomorrow-night-4c0ae647.css">
+        <link rel="stylesheet" id="mdbook-ayu-highlight-css" href="ayu-highlight-3fdfc3ac.css">
+
+        <!-- Custom theme stylesheets -->
+        <link rel="stylesheet" href="./src/assets/custom.css">
+
+
+        <!-- Provide site root and default themes to javascript -->
+        <script>
+            const path_to_root = "";
+            const default_light_theme = "dark";
+            const default_dark_theme = "ayu";
+            window.path_to_searchindex_js = "searchindex-06437900.js";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="toc-190cdb1e.js"></script>
+    </head>
+    <body>
+    <div id="mdbook-help-container">
+        <div id="mdbook-help-popup">
+            <h2 class="mdbook-help-title">Keyboard shortcuts</h2>
+            <div>
+                <p>Press <kbd>←</kbd> or <kbd>→</kbd> to navigate between chapters</p>
+                <p>Press <kbd>S</kbd> or <kbd>/</kbd> to search in the book</p>
+                <p>Press <kbd>?</kbd> to show this help</p>
+                <p>Press <kbd>Esc</kbd> to hide this help</p>
+            </div>
+        </div>
+    </div>
+    <div id="mdbook-body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('dark')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="mdbook-sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("mdbook-sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+                sidebar_toggle.checked = false;
+            }
+            if (sidebar === 'visible') {
+                sidebar_toggle.checked = true;
+            } else {
+                html.classList.remove('sidebar-visible');
+            }
+        </script>
+
+        <nav id="mdbook-sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="toc.html"></iframe>
+            </noscript>
+            <div id="mdbook-sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="mdbook-page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="mdbook-menu-bar-hover-placeholder"></div>
+                <div id="mdbook-menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="mdbook-sidebar-toggle" class="icon-button" for="mdbook-sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="mdbook-sidebar">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M0 96C0 78.3 14.3 64 32 64H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32C14.3 128 0 113.7 0 96zM0 256c0-17.7 14.3-32 32-32H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32c-17.7 0-32-14.3-32-32zM448 416c0 17.7-14.3 32-32 32H32c-17.7 0-32-14.3-32-32s14.3-32 32-32H416c17.7 0 32 14.3 32 32z"/></svg></span>
+                        </label>
+                        <button id="mdbook-theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="mdbook-theme-list">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M371.3 367.1c27.3-3.9 51.9-19.4 67.2-42.9L600.2 74.1c12.6-19.5 9.4-45.3-7.6-61.2S549.7-4.4 531.1 9.6L294.4 187.2c-24 18-38.2 46.1-38.4 76.1L371.3 367.1zm-19.6 25.4l-116-104.4C175.9 290.3 128 339.6 128 400c0 3.9 .2 7.8 .6 11.6c1.8 17.5-10.2 36.4-27.8 36.4H96c-17.7 0-32 14.3-32 32s14.3 32 32 32H240c61.9 0 112-50.1 112-112c0-2.5-.1-5-.2-7.5z"/></svg></span>
+                        </button>
+                        <ul id="mdbook-theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-default_theme">Auto</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-ayu">Ayu</button></li>
+                        </ul>
+                        <button id="mdbook-search-toggle" class="icon-button" type="button" title="Search (`/`)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="/ s" aria-controls="mdbook-searchbar">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M416 208c0 45.9-14.9 88.3-40 122.7L502.6 457.4c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L330.7 376c-34.4 25.2-76.8 40-122.7 40C93.1 416 0 322.9 0 208S93.1 0 208 0S416 93.1 416 208zM208 352c79.5 0 144-64.5 144-144s-64.5-144-144-144S64 128.5 64 208s64.5 144 144 144z"/></svg></span>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">Embedded Rust Basics</h1>
+
+                    <div class="right-buttons">
+                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                            <span class=fa-svg id="print-button"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M128 0C92.7 0 64 28.7 64 64v96h64V64H354.7L384 93.3V160h64V93.3c0-17-6.7-33.3-18.7-45.3L400 18.7C388 6.7 371.7 0 354.7 0H128zM384 352v32 64H128V384 368 352H384zm64 32h32c17.7 0 32-14.3 32-32V256c0-35.3-28.7-64-64-64H64c-35.3 0-64 28.7-64 64v96c0 17.7 14.3 32 32 32H64v64c0 35.3 28.7 64 64 64H384c35.3 0 64-28.7 64-64V384zm-16-88c-13.3 0-24-10.7-24-24s10.7-24 24-24s24 10.7 24 24s-10.7 24-24 24z"/></svg></span>
+                        </a>
+                        <a href="https://github.com/micrors/esp32-c6" title="Git repository" aria-label="Git repository">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"/></svg></span>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="mdbook-search-wrapper" class="hidden">
+                    <form id="mdbook-searchbar-outer" class="searchbar-outer">
+                        <div class="search-wrapper">
+                            <input type="search" id="mdbook-searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="mdbook-searchresults-outer" aria-describedby="searchresults-header">
+                            <div class="spinner-wrapper">
+                                <span class=fa-svg id="fa-spin"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M304 48c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zm0 416c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zM48 304c26.5 0 48-21.5 48-48s-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48zm464-48c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zM142.9 437c18.7-18.7 18.7-49.1 0-67.9s-49.1-18.7-67.9 0s-18.7 49.1 0 67.9s49.1 18.7 67.9 0zm0-294.2c18.7-18.7 18.7-49.1 0-67.9S93.7 56.2 75 75s-18.7 49.1 0 67.9s49.1 18.7 67.9 0zM369.1 437c18.7 18.7 49.1 18.7 67.9 0s18.7-49.1 0-67.9s-49.1-18.7-67.9 0s-18.7 49.1 0 67.9z"/></svg></span>
+                            </div>
+                        </div>
+                    </form>
+                    <div id="mdbook-searchresults-outer" class="searchresults-outer hidden">
+                        <div id="mdbook-searchresults-header" class="searchresults-header"></div>
+                        <ul id="mdbook-searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('mdbook-sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('mdbook-sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#mdbook-sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="mdbook-content" class="content">
+                    <main>
+                        <h1 id="this-book"><a class="header" href="#this-book">This book</a></h1>
+<p>This is an embedded-rust tutorial using the esp32-c6 board.</p>
+<p>The book aims to be self-contained, but brief reading material will be suggested.</p>
+<p>The goals are to show:</p>
+<ol>
+<li>The basics of the board and hardware components,</li>
+<li>How to start and configure new projects,</li>
+<li>What we can do with a board.</li>
+</ol>
+<p>so that you can do projects independently afterwards.</p>
+<h2 id="prior-knowledge"><a class="header" href="#prior-knowledge">Prior Knowledge</a></h2>
+<p>Rust knowledge is assumed, but no embedded experience is required.
+The content was written for Unix (Linux, MacOS).</p>
+<h2 id="hardware"><a class="header" href="#hardware">Hardware</a></h2>
+<p>The esp32-c6 board is available on Mouser, Aliexpress and other retailers.
+It should look similar to:</p>
+<div class="center w220">
+    <a href="assets/board.jpg">
+    <img alt="Close up image of our board." src="assets/board.jpg" />
+    </a>
+</div>
+
+<p>Other required hardware:</p>
+<ul>
+<li>
+<p>USB-C cable to link your computer and the board.</p>
+<ul>
+<li>The cable <em>has to</em> support data transfers and not be power-only.</li>
+</ul>
+</li>
+<li>
+<p>One resistor, 2 jumper wires, one LED, one breadboard.
+These are needed for <em>Blinky</em> and <em>Handle Input</em> chapters.</p>
+</li>
+</ul>
+<h2 id="source"><a class="header" href="#source">Source</a></h2>
+<p>The source for the <strong>book</strong> and <strong>code exercises</strong> is at <a href="https://github.com/micrors/esp32-c6">https://github.com/micrors/esp32-c6</a>.
+To get started, clone repo and then change directory:</p>
+<pre><code>git clone https://github.com/micrors/esp32-c6 micrors_esp
+cd micrors_esp
+</code></pre>
+<p><strong>Repository contents</strong>:</p>
+<ul>
+<li><code>book/</code>: markdown sources of this book.</li>
+<li><code>exercises/</code>: code examples and exercises.</li>
+</ul>
+<!-- Too much info. May be OK for an appendix.
+* [Code examples] for setting up peripherals
+* [MCU datasheet] i.e for the esp32-c6 micro controller.
+* [reference manual] for esp32-c6 board: large, complete description of
+board.
+[MCU datasheet]: https://documentation.espressif.com/esp32-c6-wroom-1*wroom-1u*datasheet_en.pdf
+
+[reference manual]: https://documentation.espressif.com/esp32-c6*technical*reference*manual*en.pdf
+
+[Code examples]: https://github.com/esp-rs/esp-hal/tree/main/examples
+-->
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="embedded-basics"><a class="header" href="#embedded-basics">Embedded Basics</a></h1>
+<p>The <em>board</em> (or DevKit), as shown earlier, is:</p>
+<div class="center w220">
+    <a href="assets/board.jpg"> <img alt="Close up image of our board." src="assets/board.jpg" />
+    </a>
+</div>
+
+<p>The <em>board</em> then, is the whole item. Its main parts are:</p>
+<ul>
+<li>The <em>printed circuit board</em> (PCB): the flat fiberglass sheet supporting all electronic components.</li>
+<li>The <em>components</em>: items laid on top of the PCB. They interconnect through <em>traces</em> which are thin copper wires. Examples of components: <em>module</em>, USB ports, LEDs, GPIO-pin headers.</li>
+</ul>
+<p>So we have the flat piece with the components laid on top. Before zooming further, this is the hierarchy we will be exploring in the definitions (the outer levels contain the inner levels)</p>
+<ul>
+<li>Board
+<ul>
+<li>Module
+<ul>
+<li>SoC (or MCU)
+<ul>
+<li>CPU, ROM, SRAM,</li>
+<li>Advanced Peripherals: Wi-Fi, RF (Bluetooth).</li>
+<li>Peripherals: GPIO, UART, I2C, ADC</li>
+</ul>
+</li>
+<li>Other Items</li>
+</ul>
+</li>
+<li>Components: USB, LED, GPIO pin-headers</li>
+</ul>
+</li>
+</ul>
+<p>The description below aren't technical, they are just an overview.</p>
+<h2 id="module"><a class="header" href="#module">Module</a></h2>
+<p>The <em>module</em> is the big square labelled ESP32-C6-WROOM (or some variant). It takes almost half the board.</p>
+<p>Within it, a module has a few more items, the key one being the SoC, short for System on a Chip. We can't see the SoC unless we take the <em>module</em>'s lid off, but here is how it looks within:</p>
+<div class="center w320"> <!--other classes: w220, w420-->
+<!--Start with `/` following path from `src`.-->
+    <a href="assets/devkit-module-soc.png">
+        <img alt="Breakdown of Devkit (or just Board) to Module, to SoC." src="assets/devkit-module-soc.png" />
+    </a>
+    
+<p>Image from <a href="https://esp32.implrust.com/">implFerris/esp32-book</a> under <a href="https://creativecommons.org/licenses/by/4.0/">CC-BY-SA 4.0</a> </p>
+
+</div>
+
+<h2 id="soc"><a class="header" href="#soc">SoC</a></h2>
+<p>The SoC includes CPU, ROM, SRAM, advanced peripherals and peripherals. It's an all-in-one integrated circuit or chip.</p>
+<p>The <em>advanced peripherals</em> are those making SoC an advanced MCU, like Bluetooth and Wi-Fi.</p>
+<p>The <em>peripherals</em> are parts of the SoC placed on the <em>periphery</em> of the CPU, extending its capabilities. For example: GPIO, UART, I2C, SPI, DAC, ADC. We can't see them directly.</p>
+<p>The GPIO peripheral is "broken out" into the pin headers at each side of the board. See the [user-guide] schematics and tables for the board.</p>
+<h3 id="soc-or-mcu"><a class="header" href="#soc-or-mcu">SoC or MCU?</a></h3>
+<p>In this tutorial we consider System on a Chip (SoC) and Micro controller unit (MCU) synonyms. Wikipedia defines MCU and disambiguates <a href="https://en.wikipedia.org/wiki/Microcontroller">SoC or MCU</a> very well (I modified it slightly):</p>
+<blockquote>
+<p>A microcontroller (MC, uC, or μC) or microcontroller unit (MCU) is a small computer on a single integrated circuit. A microcontroller contains one or more processor cores along with memory and programmable input/output peripherals.</p>
+<p>In modern terminology, a microcontroller is similar to, but less sophisticated than, a system on a chip (SoC). A SoC may include a microcontroller as one of its components but usually integrates it with <em>advanced peripherals</em> like a graphics processing unit (GPU), a Wi-Fi module, or one or more coprocessors.</p>
+</blockquote>
+<p>In very simple terms, a <em>module</em> contains the SoC which is just an advanced MCU.</p>
+<h2 id="putting-it-all-together"><a class="header" href="#putting-it-all-together">Putting it all together</a></h2>
+<p>An explanation of how it all comes together is in the <a href="https://docs.rust-embedded.org/discovery-mb2/04-meet-your-hardware/microbit-v2.html">micro:bit v2</a> book, a modified version is provided below:</p>
+<blockquote>
+<p>Our MCU (or SoC) has tiny metal pins sitting right underneath it. These pins and the board components are wired via copper traces, the little "roads" on the board.</p>
+<p>The MCU can be programmed to change the electrical state of the pins. The pins change the electrical state of the traces, ultimately controlling the components. So <em>the MCU can control the components.</em></p>
+<p>For example, by enabling or disabling electrical current to flow through a specific pin, an LED attached to that pin (via the traces) can be turned on and off.</p>
+</blockquote>
+<h2 id="suggested-reading"><a class="header" href="#suggested-reading">Suggested reading</a></h2>
+<ul>
+<li><a href="https://docs.espressif.com/projects/esp-dev-kits/en/latest/esp32c6/esp32-c6-devkitc-1/user_guide.html">esp32-c6 user-guide</a>. It describes the board components, peripherals, and pinouts.</li>
+<li>The <a href="https://documentation.espressif.com/esp32-c6_datasheet_en.pdf">SoC datasheet</a>, especially the product page, and the features (first 3 or 4 pages).</li>
+<li>[esp32 tutorial] page on the distinction between DevKit (or Board), Module and SoC.</li>
+</ul>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="set-up"><a class="header" href="#set-up">Set Up</a></h1>
+<p>Now it's time to connect the host computer to the development board.</p>
+<ol>
+<li>Plug one end of the USB to the computer's USB port.</li>
+<li>Plug the other end to the board's <strong>esp32c6</strong>-tagged USB port (or you may see a <strong>USB</strong> tag.)</li>
+</ol>
+<div class="center w220">
+<a href="assets/usb_connection.jpg">
+<img alt="esp32-c6 usb port connected to usb port in laptop." src="assets/usb_connection.jpg" />
+</a>
+<p>Board-Laptop USB-link (white cable).</p>
+
+</div>
+
+<blockquote class="blockquote-tag blockquote-tag-note">
+<p class="blockquote-tag-title"><svg viewbox="0 0 16 16" width="18" height="18"><path d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8Zm8-6.5a6.5 6.5 0 1 0 0 13 6.5 6.5 0 0 0 0-13ZM6.5 7.75A.75.75 0 0 1 7.25 7h1a.75.75 0 0 1 .75.75v2.75h.25a.75.75 0 0 1 0 1.5h-2a.75.75 0 0 1 0-1.5h.25v-2h-.25a.75.75 0 0 1-.75-.75ZM8 6a1 1 0 1 1 0-2 1 1 0 0 1 0 2Z"></path></svg>Note</p>
+<p>The extra USB port is <strong>UART</strong> or <strong>ch343</strong>-tagged. It is used to communicate with the UART peripheral within the MCU. Both ports can be used for <em>flashing</em> and <em>powering</em>, but only <strong>esp32c6</strong> can be used for <em>debugging</em>.</p>
+</blockquote>
+<h2 id="check-connection"><a class="header" href="#check-connection">Check connection</a></h2>
+<p>To ensure our OS can detect the board, list the devices with one of these approaches:</p>
+<ul>
+<li>
+<p>With <code>ls</code></p>
+<pre><code class="language-bash">ls /dev/tty*usb* # MacOS
+</code></pre>
+<pre><code class="language-bash">ls /dev/ttyACM*  # Linux
+</code></pre>
+</li>
+<li>
+<p>With <code>lsusb</code></p>
+<pre><code class="language-bash">lsusb | grep JTAG
+# Bus (...) USB JTAG/serial debug unit (...)
+</code></pre>
+</li>
+</ul>
+<h2 id="install-software"><a class="header" href="#install-software">Install Software</a></h2>
+<p>Now that the board is seen by our OS, let's install all needed software.</p>
+<h3 id="rust-tools"><a class="header" href="#rust-tools">Rust Tools</a></h3>
+<ol>
+<li>
+<p>Install the Rust toolchain following the steps in <a href="https://rustup.rs/">https://rustup.rs/</a></p>
+<ul>
+<li>The Rust Toolchain is <code>rustup</code> plus many components <code>cargo</code>, <code>rustc</code>, the <em>compiled</em> <code>std</code> component and so on.</li>
+</ul>
+</li>
+<li>
+<p>Add the compiled <code>std</code>-component for our <em>target</em> processor</p>
+<pre><code class="language-bash">rustup target add riscv32imac-unknown-none-elf
+</code></pre>
+</li>
+<li>
+<p>Add development components:</p>
+<pre><code class="language-bash">rustup component add rust-analyzer rust-src
+</code></pre>
+<p><code>rust-src</code> is the <code>std</code>-component's source code, used by <code>rust-analyzer</code>.</p>
+</li>
+</ol>
+<h3 id="espressif-tools"><a class="header" href="#espressif-tools">Espressif tools</a></h3>
+<p><a href="https://github.com/esp-rs/espflash/tree/main/espflash"><code>espflash</code></a> is used for flashing our ELF binary (our program) into the board.</p>
+<p>Install <code>espflash</code> with: <code>cargo install espflash</code></p>
+<h3 id="build-dependencies"><a class="header" href="#build-dependencies">Build dependencies</a></h3>
+<p><code>rustc</code> has compilation backends which do part of the compilation of our code. <code>llvm</code> is one such possible backend (the most common one.)</p>
+<ul>
+<li>
+<p>Debian/Ubuntu.</p>
+<pre><code class="language-bash">sudo apt install llvm-dev libclang-dev clang
+</code></pre>
+</li>
+<li>
+<p>MacOS. When using the Homebrew package manager, which we recommend:</p>
+<pre><code class="language-bash">brew install llvm
+</code></pre>
+</li>
+</ul>
+<h2 id="suggested-reading-1"><a class="header" href="#suggested-reading-1">Suggested reading</a></h2>
+<ul>
+<li>esp32 tutorial, <a href="https://esp32.implrust.com/std-to-no-std/cross-compilation/index.html">cross-compiling</a>.</li>
+</ul>
+<h2 id="additional-software"><a class="header" href="#additional-software">Additional Software</a></h2>
+<ul>
+<li>It's recommended to install <a href="https://rust-analyzer.github.io/"><code>Rust Analyzer</code></a>, following their guide.</li>
+</ul>
+<!--
+
+////// This is too advanced and kind of in detriment of learning
+////// So I am commenting it out for now.
+
+### Aside
+
+We could install `nightly` in step `1.`; then `2.` and `3.` work the same.
+
+But with `nightly` we can skip step `2.` and use modified `3.`
+
+```bash
+rustup component add rust-src rustfmt clippy rust-analyzer
+```
+
+`rust-src` is the *source code* of the standard library component.
+
+Then, for each exercise/crate, we need to update `.cargo/config.toml` with:
+
+```diff
++[unstable]
++build-std=["core"]
+```
+
+We also need to modify the `rust-toolchain.toml`:
+
+```diff
+[toolchain]
++channel = "nightly"
+-channel = "stable"
+components = ["rust-src"]
+-targets = ["riscv32imac-unknown-none-elf"]
+```
+
+When running `cargo run --release` core will be compiled along with our crate (not used the precompiled one). However, this is *unstable* and it is only mentioned here as a cool feature.
+-->
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="boilerplate"><a class="header" href="#boilerplate">Boilerplate</a></h1>
+<p>A few lines frequently repeat, like a mantra througout the examples. It helps a lot to analyse them.</p>
+<h2 id="no_std-no_main"><a class="header" href="#no_std-no_main">no_std, no_main</a></h2>
+<p><code>no_std</code>, <code>no_main</code>, <code>no_std</code>, <code>no_main</code>, ...</p>
+<p>The entry files start with</p>
+<pre><code class="language-rust">#![no_std]
+#![no_main]
+// ...
+#[esp_hal::main]
+fn main() -&gt; ! { }</code></pre>
+<ul>
+<li><code>no_std</code> disables loading the <code>std</code> crate. It only loads <code>core</code> by default.</li>
+<li><code>no_main</code> tells Rust not to search for a <code>main</code> function.
+<ul>
+<li>This is handled by <code>esp_hal::main</code> macro.</li>
+</ul>
+</li>
+</ul>
+<h2 id="imports"><a class="header" href="#imports">Imports</a></h2>
+<p>A few imports also repeat througout:</p>
+<pre><code class="language-rust">use esp_hal::{main, Config};
+use esp_backtrace as _;
+use esp_println::println;</code></pre>
+<ul>
+<li>
+<p><code>esp_hal</code>: provides <code>main</code> entry plus useful modules for dealing with peripherals, time, and so forth.</p>
+</li>
+<li>
+<p><code>esp_backtrace</code>: Out of bounds indexing and our own <code>panic!</code> calls have to be handled by a panic-handler (otherwise provided by <code>std</code>).</p>
+<ul>
+<li>This crate provides a replacement through the <code>panic-handler</code> feature.</li>
+<li>In summary, it handles the <code>panic!</code> calls, and prints the backtrace (call stack up to that point.).</li>
+</ul>
+<!-- Too much info. -->
+<!-- It prints via `esp_println`, added by the `println` feature. -->
+<!-- It can also print via `defmt` feature instead. -->
+</li>
+<li>
+<p><code>esp_println</code>: The macro <code>println!</code> comes <a href="https://doc.rust-lang.org/std/macro.println.html">from <code>std</code></a>. We don't use <code>std</code> so <a href="https://github.com/esp-rs/esp-hal/tree/main/esp-println"><code>esp-println</code></a> provides the macro for us.</p>
+<ul>
+<li>Logging backends (<code>log</code>, <code>defmt</code>) can also be used:</li>
+</ul>
+<pre><code class="language-diff">use esp_println::{logger,println};
++use log::{info, trace};
+</code></pre>
+<ul>
+<li>The <code>log</code> import isn't needed if we don't use these macros.</li>
+</ul>
+</li>
+</ul>
+<h2 id="app-descriptor"><a class="header" href="#app-descriptor">App Descriptor</a></h2>
+<p>The line is:</p>
+<pre><code class="language-rust">esp_bootloader_esp_idf::esp_app_desc!();</code></pre>
+<ul>
+<li>The board has 2 bootloaders.
+<ol>
+<li>First stage bootloader: written in ROM and can't be changed. It's read first. It loads the second stage bootloader.</li>
+<li>The second stage bootloader needs an application descriptor, which <code>esp_bootloader_esp_idf::esp_app_desc!();</code> creates for us. This bootloader loads our application.
+<blockquote class="blockquote-tag blockquote-tag-note">
+<p class="blockquote-tag-title"><svg viewbox="0 0 16 16" width="18" height="18"><path d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8Zm8-6.5a6.5 6.5 0 1 0 0 13 6.5 6.5 0 0 0 0-13ZM6.5 7.75A.75.75 0 0 1 7.25 7h1a.75.75 0 0 1 .75.75v2.75h.25a.75.75 0 0 1 0 1.5h-2a.75.75 0 0 1 0-1.5h.25v-2h-.25a.75.75 0 0 1-.75-.75ZM8 6a1 1 0 1 1 0-2 1 1 0 0 1 0 2Z"></path></svg>Note</p>
+<p>Each time we flash a binary, <code>espflash</code> includes a pre-compiled second stage bootloader with default settings, alongside our binary-code.</p>
+</blockquote>
+</li>
+</ol>
+</li>
+</ul>
+<h2 id="init"><a class="header" href="#init">init</a></h2>
+<p>The other line is within <code>fn main() { }</code> namely:</p>
+<pre><code class="language-rust">#[main]
+fn main() -&gt; ! {
+    let _peripherals = esp_hal::init(Config::default());
+}</code></pre>
+<p>This line initialises our MCU with default configuration. <a href="https://github.com/esp-rs/esp-hal/blob/9c7c809cec72b11db82d5f72f75d1c075ce654bb/esp-hal/src/lib.rs#L728">In their words</a>, for <code>esp_hal::init</code></p>
+<blockquote>
+<p>Initialize the system.</p>
+<p>This function sets up the CPU clock and watchdog, then, returns the peripherals and clocks.</p>
+</blockquote>
+<p>Notice the "returns the peripherals". That's important. The <code>Peripherals</code> struct provides access to all of the hardware peripherals on the chip!</p>
+<p>And for <a href="https://github.com/esp-rs/esp-hal/blob/9c7c809cec72b11db82d5f72f75d1c075ce654bb/esp-hal/src/lib.rs#L625"><code>esp_hal::Config</code></a>:</p>
+<blockquote>
+<p>System configuration.</p>
+<p>This <code>struct</code> is marked with <code>#[non_exhaustive]</code> and can't be instantiated directly. This is done to prevent breaking changes when new fields are added to the <code>struct</code>. Instead, use the [<code>Config::default()</code>] method to create a new instance.</p>
+</blockquote>
+<h2 id="recap"><a class="header" href="#recap">Recap</a></h2>
+<p>So we have described the macro attributes (like <code>#[main]</code>), the module imports, the app descriptor and board initialisation.</p>
+<blockquote class="blockquote-tag blockquote-tag-tip">
+<p class="blockquote-tag-title"><svg viewbox="0 0 16 16" width="18" height="18"><path d="M8 1.5c-2.363 0-4 1.69-4 3.75 0 .984.424 1.625.984 2.304l.214.253c.223.264.47.556.673.848.284.411.537.896.621 1.49a.75.75 0 0 1-1.484.211c-.04-.282-.163-.547-.37-.847a8.456 8.456 0 0 0-.542-.68c-.084-.1-.173-.205-.268-.32C3.201 7.75 2.5 6.766 2.5 5.25 2.5 2.31 4.863 0 8 0s5.5 2.31 5.5 5.25c0 1.516-.701 2.5-1.328 3.259-.095.115-.184.22-.268.319-.207.245-.383.453-.541.681-.208.3-.33.565-.37.847a.751.751 0 0 1-1.485-.212c.084-.593.337-1.078.621-1.489.203-.292.45-.584.673-.848.075-.088.147-.173.213-.253.561-.679.985-1.32.985-2.304 0-2.06-1.637-3.75-4-3.75ZM5.75 12h4.5a.75.75 0 0 1 0 1.5h-4.5a.75.75 0 0 1 0-1.5ZM6 15.25a.75.75 0 0 1 .75-.75h2.5a.75.75 0 0 1 0 1.5h-2.5a.75.75 0 0 1-.75-.75Z"></path></svg>Tip</p>
+<p>All the snippets in this page are so ubiquitous that it is useful to memorise them and their role.</p>
+</blockquote>
+<h2 id="suggested-reading-2"><a class="header" href="#suggested-reading-2">Suggested Reading</a></h2>
+<ul>
+<li><a href="https://esp32.implrust.com/std-to-no-std/panic-handler.html">panic-handler</a>.</li>
+</ul>
+<!---->
+<!-- # What is no_std? -->
+<!---->
+<!-- This tutorial is "`no_std`", but what does it mean? `std` can refer to either: -->
+<!---->
+<!-- - `std` the crate, or -->
+<!-- - `std` the `rust-std` component, including the crates `std`, `core` and `alloc`. -->
+<!---->
+<!-- This book distinguishes these by adding the words *crate* and *component*, respectively. -->
+<!---->
+<!-- The microcontroller has no Operating System. Since `std` *crate* relies on one, `#[no_std]` is used in `main.rs` to exclude the `std` crate. -->
+<!---->
+<!-- To be precise, only `core` is included by default. A comparison is provided by this [the table][Rust Embedded Guide] below, copied from the Rust Embedded Guide: -->
+<!---->
+<!-- | feature                                                   | no\_std | std | -->
+<!-- |-----------------------------------------------------------|---------|-----| -->
+<!-- | heap (dynamic memory)                                     |    *    |  ✓  | -->
+<!-- | collections (Vec, BTreeMap, etc)                          |   **    |  ✓  | -->
+<!-- | stack overflow protection                                 |    ✘    |  ✓  | -->
+<!-- | runs init code before main                                |    ✘    |  ✓  | -->
+<!-- | libstd available                                          |    ✘    |  ✓  | -->
+<!-- | libcore available                                         |    ✓    |  ✓  | -->
+<!-- | writing firmware, kernel, or bootloader code              |    ✓    |  ✘  | -->
+<!---->
+<!-- \* Only if you use the `alloc` crate and use a suitable allocator like [esp-alloc]. -->
+<!---->
+<!-- \** Only if you use the `collections` crate and configure a global default allocator. -->
+<!---->
+<!-- \** HashMap and HashSet are not available due to a lack of a secure random number generator. -->
+<!---->
+<!---->
+<!-- # What is no_std? -->
+<!---->
+<!-- This tutorial is "`no_std`", but what does it mean? `std` can refer to either: -->
+<!---->
+<!-- - `std` the crate, or -->
+<!-- - `std` the `rust-std` component, including the crates `std`, `core` and `alloc`. -->
+<!---->
+<!-- This book distinguishes these by adding the words *crate* and *component*, respectively. -->
+<!---->
+<!-- The microcontroller has no Operating System. Since `std` *crate* relies on one, `#[no_std]` is used in `main.rs` to exclude the `std` crate. -->
+<!---->
+<!-- To be precise, only `core` is included by default. A comparison is provided by this [the table][Rust Embedded Guide] below, copied from the Rust Embedded Guide: -->
+<!---->
+<!-- | feature                                                   | no\_std | std | -->
+<!-- |-----------------------------------------------------------|---------|-----| -->
+<!-- | heap (dynamic memory)                                     |    *    |  ✓  | -->
+<!-- | collections (Vec, BTreeMap, etc)                          |   **    |  ✓  | -->
+<!-- | stack overflow protection                                 |    ✘    |  ✓  | -->
+<!-- | runs init code before main                                |    ✘    |  ✓  | -->
+<!-- | libstd available                                          |    ✘    |  ✓  | -->
+<!-- | libcore available                                         |    ✓    |  ✓  | -->
+<!-- | writing firmware, kernel, or bootloader code              |    ✓    |  ✘  | -->
+<!---->
+<!-- \* Only if you use the `alloc` crate and use a suitable allocator like [esp-alloc]. -->
+<!---->
+<!-- \** Only if you use the `collections` crate and configure a global default allocator. -->
+<!---->
+<!-- \** HashMap and HashSet are not available due to a lack of a secure random number generator.
+
+[Rust Embedded Guide]: https://docs.rust-embedded.org/book/intro/no-std.html#overview
+
+[esp-alloc]: https://docs.rs/crate/esp-alloc/latest
+-->
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="hello-world"><a class="header" href="#hello-world">Hello World</a></h1>
+<p>There is a lot to learn, so let's start simple. Our "hello world" is more of a logging practice.</p>
+<ol>
+<li>
+<p>Connect the board to your computer and access the first project:</p>
+<pre><code class="language-bash">cd exercises/hello_world
+</code></pre>
+</li>
+<li>
+<p><em>Build, flash, and monitor</em> the project with <code>cargo run</code>.
+You should see:</p>
+<pre><code class="language-txt">..
+Commands:
+    CTRL+R    Reset chip
+    CTRL+C    Exit
+..
+loop..!
+..
+</code></pre>
+<blockquote class="blockquote-tag blockquote-tag-tip">
+<p class="blockquote-tag-title"><svg viewbox="0 0 16 16" width="18" height="18"><path d="M8 1.5c-2.363 0-4 1.69-4 3.75 0 .984.424 1.625.984 2.304l.214.253c.223.264.47.556.673.848.284.411.537.896.621 1.49a.75.75 0 0 1-1.484.211c-.04-.282-.163-.547-.37-.847a8.456 8.456 0 0 0-.542-.68c-.084-.1-.173-.205-.268-.32C3.201 7.75 2.5 6.766 2.5 5.25 2.5 2.31 4.863 0 8 0s5.5 2.31 5.5 5.25c0 1.516-.701 2.5-1.328 3.259-.095.115-.184.22-.268.319-.207.245-.383.453-.541.681-.208.3-.33.565-.37.847a.751.751 0 0 1-1.485-.212c.084-.593.337-1.078.621-1.489.203-.292.45-.584.673-.848.075-.088.147-.173.213-.253.561-.679.985-1.32.985-2.304 0-2.06-1.637-3.75-4-3.75ZM5.75 12h4.5a.75.75 0 0 1 0 1.5h-4.5a.75.75 0 0 1 0-1.5ZM6 15.25a.75.75 0 0 1 .75-.75h2.5a.75.75 0 0 1 0 1.5h-2.5a.75.75 0 0 1-.75-.75Z"></path></svg>Tip</p>
+<p>Try pressing <code>CTRL+R</code> to reset, then press <code>CTRL+C</code> to exit.</p>
+</blockquote>
+<p>The aim here is just run the binary.</p>
+</li>
+</ol>
+<h2 id="build-flash-and-monitor"><a class="header" href="#build-flash-and-monitor"><em>Build, flash and monitor</em>?</a></h2>
+<p>The <code>.cargo/config.toml</code> includes this config:</p>
+<pre><code class="language-toml">[target.riscv32imac-unknown-none-elf] # our processor arch.
+runner = "espflash flash --monitor"   # for `cargo run`.
+</code></pre>
+<p>Our <code>cargo run</code> is replaced by <code>cargo build &amp;&amp; espflash flash &lt;elf_path&gt; --monitor</code>.</p>
+<p>This builds and then flashes the binary. Finally, it monitors for logs.
+Removing <code>--monitor</code> it won't wait for logs.</p>
+<h2 id="exercise"><a class="header" href="#exercise">Exercise</a></h2>
+<p>We already know our code can print information with <code>println!</code> macro. For prettier logs we can use <code>log</code> or <code>defmt</code>. Let's try adding them:</p>
+<ol start="0">
+<li>Take some time to read the code. Do you recognise the boilerplate discussed earlier?</li>
+<li>Try commenting out the line:
+<pre><code class="language-rust">use esp_backtrace as _;</code></pre>
+So that we can see what it provides. Then uncomment the line.</li>
+<li>Uncomment the "log lines" in <code>src/main.rs</code>,</li>
+<li>Add the <code>log</code> dependency to <code>Cargo.toml</code>.</li>
+<li>The <code>log</code> crate logging level is controlled with <code>ESP_LOG</code> under the <code>[env]</code> section in <code>.cargo/config.toml</code>.
+<ul>
+<li>
+<p>Change the <code>ESP_LOG</code> variable to turn <code>off</code> all logs. Re-run <code>cargo run</code>, to test how it works.</p>
+</li>
+<li>
+<p>Try with other levels, for example, with <code>trace</code>.</p>
+</li>
+</ul>
+</li>
+</ol>
+<p>The <code>examples/hello_world.rs</code> contains a solution.
+You can run it with <code>cargo run --example hello_world</code>.</p>
+<blockquote class="blockquote-tag blockquote-tag-important">
+<p class="blockquote-tag-title"><svg viewbox="0 0 16 16" width="18" height="18"><path d="M0 1.75C0 .784.784 0 1.75 0h12.5C15.216 0 16 .784 16 1.75v9.5A1.75 1.75 0 0 1 14.25 13H8.06l-2.573 2.573A1.458 1.458 0 0 1 3 14.543V13H1.75A1.75 1.75 0 0 1 0 11.25Zm1.75-.25a.25.25 0 0 0-.25.25v9.5c0 .138.112.25.25.25h2a.75.75 0 0 1 .75.75v2.19l2.72-2.72a.749.749 0 0 1 .53-.22h6.5a.25.25 0 0 0 .25-.25v-9.5a.25.25 0 0 0-.25-.25Zm7 2.25v2.5a.75.75 0 0 1-1.5 0v-2.5a.75.75 0 0 1 1.5 0ZM9 9a1 1 0 1 1-2 0 1 1 0 0 1 2 0Z"></path></svg>Important</p>
+<p>Running the solution requires fixing the log-lines at the bottom of <code>Cargo.toml</code>.</p>
+</blockquote>
+<h2 id="suggested-reading-3"><a class="header" href="#suggested-reading-3">Suggested Reading</a></h2>
+<ul>
+<li><a href="https://docs.rs/esp-println/latest/esp_println/">esp-println</a> crate's docs.</li>
+<li><a href="https://docs.rs/log/latest/log/">log</a> crate's docs.</li>
+</ul>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="panic"><a class="header" href="#panic">Panic</a></h1>
+<p>If something goes very wrong, a program will <code>panic!</code>.</p>
+<p><a href="https://docs.rs/crate/esp-backtrace/latest">esp-backtrace</a> provides a <code>panic!</code> implementation through the <code>panic-handler</code> feature.</p>
+<p>"Handling panic!" here means to print what was executed up to that point (the backtrace), and probably stops code execution as well.</p>
+<p>We could use our own panic-handler instead, and no backtrace at all. For example, <a href="https://esp32.implrust.com/std-to-no-std/panic-handler.html">this one</a>:</p>
+<pre><code class="language-rust">use core::panic::PanicInfo;
+use core::sync::atomic::{self, Ordering};
+
+#[inline(never)]
+#[panic_handler]
+fn panic(_info: &amp;PanicInfo) -&gt; ! {
+    loop {
+        atomic::compiler_fence(Ordering::SeqCst);
+    }
+}</code></pre>
+<blockquote class="blockquote-tag blockquote-tag-warning">
+<p class="blockquote-tag-title"><svg viewbox="0 0 16 16" width="18" height="18"><path d="M6.457 1.047c.659-1.234 2.427-1.234 3.086 0l6.082 11.378A1.75 1.75 0 0 1 14.082 15H1.918a1.75 1.75 0 0 1-1.543-2.575Zm1.763.707a.25.25 0 0 0-.44 0L1.698 13.132a.25.25 0 0 0 .22.368h12.164a.25.25 0 0 0 .22-.368Zm.53 3.996v2.5a.75.75 0 0 1-1.5 0v-2.5a.75.75 0 0 1 1.5 0ZM9 11a1 1 0 1 1-2 0 1 1 0 0 1 2 0Z"></path></svg>Warning</p>
+<p>We need to <code>use esp-backtrace as _;</code> so that this handler is included in the final binary.</p>
+</blockquote>
+<p>In the exercise below, we configure a <em>profile</em>. Profiles are configurations <code>cargo</code> uses to control compilation. When unspecified, <code>cargo</code> sets sensible defaults for us.</p>
+<h2 id="exercise-1"><a class="header" href="#exercise-1">Exercise 1</a></h2>
+<ol start="0">
+<li>
+<p>Access the project at <code>exercises/panic</code>.</p>
+</li>
+<li>
+<p>Add all the boilerplate code described earlier.</p>
+</li>
+<li>
+<p>Add a <code>panic!</code> within <code>main</code>.</p>
+<ul>
+<li>But remember, it's for irrecoverable errors!</li>
+</ul>
+</li>
+<li>
+<p>Run the code with <code>cargo run</code>; this uses the <em>development</em> profile.</p>
+<ul>
+<li>It outputs debug information into the compiled binary.</li>
+</ul>
+</li>
+<li>
+<p>Then run with <em>release</em> profile <code>cargo run --release</code>.</p>
+<ul>
+<li>
+<p>The default <code>--release</code> behaviour <em>excludes</em> debug information and minimises the binary size; the backtrace shows the missing debug information with <code>??</code>.</p>
+<pre><code class="language-console"> Hello world!
+ ====================== PANIC ======================
+ panicked at examples/panic.rs:24:5:
+ This is a panic
+ Backtrace:
+ 0x4200252a
+ main
+     at ??:??
+</code></pre>
+</li>
+</ul>
+</li>
+</ol>
+<p><code>examples/panic.rs</code> contains a solution. It can be run with: <code>cargo run --example panic --release</code>.</p>
+<h2 id="exercise-2"><a class="header" href="#exercise-2">Exercise 2</a></h2>
+<ol>
+<li>
+<p>Edit the <code>.cargo/config.toml</code>:</p>
+<pre><code class="language-diff">+[profile.release]
++debug = true
+</code></pre>
+<ul>
+<li>Now it will emit debug information in the ELF binary file; <em>yet debug info isn't flashed</em> into the target, it is just used to display the backtrace.</li>
+<li>Re-run the program with <code>--release</code> and confirm <code>??:??</code> is now filled in.</li>
+</ul>
+</li>
+<li>
+<p>Try another option:</p>
+<pre><code class="language-diff">+[profile.dev]
++opt-level = "s"
+</code></pre>
+<p>which turns size-optimisation on, and has debug info by default. Run it with <code>cargo run</code> (no <code>--release</code> flag since we want to run the dev profile.)</p>
+</li>
+</ol>
+<h2 id="recap-1"><a class="header" href="#recap-1">Recap</a></h2>
+<ul>
+<li>Using <code>esp-backtrace</code>.</li>
+<li>Using <code>panic!</code> to exit the program on error.</li>
+<li>Profiles:
+<ul>
+<li>Tweak debug information on backtrace.</li>
+<li>Optimise binary size.</li>
+</ul>
+</li>
+</ul>
+<h2 id="suggested-reading-4"><a class="header" href="#suggested-reading-4">Suggested Reading</a></h2>
+<ul>
+<li><a href="https://docs.rs/crate/esp-backtrace/latest">esp-backtrace</a>.</li>
+</ul>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="blinky"><a class="header" href="#blinky">Blinky</a></h1>
+<p>We will now create the iconic <em>blinky</em>.</p>
+<p>Let's access the project with <code>cd exercises/blinky</code>.</p>
+<p>On esp32-c6 board there is no regular LED connected, instead there is an addressable LED which works differently and is beyond the scope of this book.</p>
+<p>Instead, we will use a regular LED and a resistor, and build a circuit controlled with the GPIO pin headers.</p>
+<div class="center w320">
+<a href="assets/led_connection.jpg">
+<img alt="Wire up a circuit with an LED and a resistor connected to the board." src="assets/led_connection.jpg" />
+</a>
+<p>esp32-c6, wiring the LED</p>
+
+</div>
+
+<p>Wire up the board as shown on the previous image:</p>
+<ol>
+<li>Start wiring from <code>GND</code> pin header (red wire).</li>
+<li>From there to the resistor (220mΩ or larger, without it the LED blows up).</li>
+<li>From the other leg of the resistor to the LED (blue wire).</li>
+<li>Finally, the LED connects to pin-header 7 (the long LED-leg is on 7).</li>
+</ol>
+<p>Let's reconsider our boilerplate:</p>
+<pre><code class="language-rust">#![no_std]
+#![no_main]
+
+use esp_backtrace as _;
+use esp_println::println;
+use esp_hal::{main, Config};
+
+esp_bootloader_esp_idf::esp_app_desc!();
+
+fn main() -&gt; ! {
+    let peripherals = esp_hal::init(Config::default());
+}</code></pre>
+<p>And now we ask ourselves:</p>
+<ol>
+<li>Which peripheral can we use to control pin-headers' electric state?
+<ul>
+<li>We can use the <code>peripherals.GPIOX</code> where <code>X</code> is the same number than the pin-header we need.</li>
+<li>In this case, it's GPIO7, labelled 7. Always check the <a href="https://docs.espressif.com/projects/esp-dev-kits/en/latest/esp32c6/_images/esp32-c6-devkitc-1-pin-layout.png">pinouts</a>.
+<blockquote class="blockquote-tag blockquote-tag-warning">
+<p class="blockquote-tag-title"><svg viewbox="0 0 16 16" width="18" height="18"><path d="M6.457 1.047c.659-1.234 2.427-1.234 3.086 0l6.082 11.378A1.75 1.75 0 0 1 14.082 15H1.918a1.75 1.75 0 0 1-1.543-2.575Zm1.763.707a.25.25 0 0 0-.44 0L1.698 13.132a.25.25 0 0 0 .22.368h12.164a.25.25 0 0 0 .22-.368Zm.53 3.996v2.5a.75.75 0 0 1-1.5 0v-2.5a.75.75 0 0 1 1.5 0ZM9 11a1 1 0 1 1-2 0 1 1 0 0 1 2 0Z"></path></svg>Warning</p>
+<p>The PCB labels are written <em>below</em> the headers!
+So GPIO7 is <strong>not</strong> mapped onto header 6 (as a quick look might suggest), but on header 7.</p>
+</blockquote>
+</li>
+</ul>
+</li>
+<li>Which driver can we use to communicate with it?
+<ul>
+<li>We can use the <code>Input</code> and / or <code>Output</code> drivers.</li>
+</ul>
+</li>
+</ol>
+<h2 id="exercise-3"><a class="header" href="#exercise-3">Exercise</a></h2>
+<ol start="0">
+<li>Open the file <code>src/main.rs</code>, take some time to read the code.</li>
+<li>Create <code>OutputConfig</code> with default configuration.
+<ul>
+<li>Hint: it implements <code>Default</code>.</li>
+</ul>
+</li>
+<li>Toggle the <code>led</code> with 3500ms delay.</li>
+</ol>
+<p>The <code>exercises/blinky/examples/blinky.rs</code> contains a solution.</p>
+<p>You can run it with the following command <code>cargo run --example blinky --release</code>.</p>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="handle-input"><a class="header" href="#handle-input">Handle Input</a></h1>
+<p>Using same wiring from the <code>blinky</code> chapter, let's now use external input to make the LED blink.</p>
+<ul>
+<li>Access <code>exercises/handle_input</code> in order to edit <code>src/main.rs</code>.</li>
+</ul>
+<blockquote class="blockquote-tag blockquote-tag-warning">
+<p class="blockquote-tag-title"><svg viewbox="0 0 16 16" width="18" height="18"><path d="M6.457 1.047c.659-1.234 2.427-1.234 3.086 0l6.082 11.378A1.75 1.75 0 0 1 14.082 15H1.918a1.75 1.75 0 0 1-1.543-2.575Zm1.763.707a.25.25 0 0 0-.44 0L1.698 13.132a.25.25 0 0 0 .22.368h12.164a.25.25 0 0 0 .22-.368Zm.53 3.996v2.5a.75.75 0 0 1-1.5 0v-2.5a.75.75 0 0 1 1.5 0ZM9 11a1 1 0 1 1-2 0 1 1 0 0 1 2 0Z"></path></svg>Warning</p>
+<p>This exercise is slightly more involved, in the sense you'll need to add more code. But there is always the solution if it gets too hard.</p>
+</blockquote>
+<h2 id="exercise-4"><a class="header" href="#exercise-4">Exercise</a></h2>
+<p>We will use the button labelled <a href="https://docs.espressif.com/projects/esp-dev-kits/en/latest/esp32c6/esp32-c6-devkitc-1/user_guide.html#id15"><code>BOOT</code> linked to <code>GPIO9</code></a> to toggle the LED.</p>
+<ol start="0">
+<li>
+<p>As per usual, we will be editing <code>src/main.rs</code>.</p>
+</li>
+<li>
+<p>We first need to fill in the boilerplate. Once that's done, this line might be of help:</p>
+<pre><code class="language-diff">// you will also have other `esp_hal` submodules besides `gpio`.
++use esp_hal::gpio::{Input, InputConfig, Level, Output, OutputConfig, Pull},
+</code></pre>
+<p>You may get inspired by the previous exercises and the boilerplate page.</p>
+</li>
+<li>
+<p>Create an <code>Output::new</code> passing GPIO7 peripheral, <code>Level::High</code> and default <code>OutputConfig</code>.</p>
+<ul>
+<li>Assign it to the <code>led</code> variable.</li>
+<li>Hint: with <em>peripherals</em> initialised, GPIO7 is a field in that struct.</li>
+</ul>
+</li>
+<li>
+<p>Create an <code>Input::new</code> passing GPIO9 peripheral.</p>
+<ul>
+<li>Use default <code>InputConfig</code>, overwrite with <code>as_pull(Pull::High)</code>.</li>
+<li>Assign it to the <code>btn</code> variable.</li>
+</ul>
+</li>
+<li>
+<p>Add the logic inside <code>loop</code>:</p>
+<ul>
+<li>When pressing it should turn the <code>led</code> on, and delay it 2 seconds.</li>
+<li>Then it turns itself off.</li>
+</ul>
+</li>
+</ol>
+<p>The <code>examples/handle_input.rs</code> contains a solution. You can run it with the following command <code>cargo run --example handle_input --release</code>.</p>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="logging---part-1"><a class="header" href="#logging---part-1">Logging - Part 1</a></h1>
+<p>What happens if we use the boilerplate, and no logging dependency?</p>
+<p>In the <code>src/main.rs</code> we start with:</p>
+<pre><code class="language-rust">#![no_std]
+#![no_main]
+// None of these: esp_backtrace, esp_println, defmt
+use esp_hal::{
+    main,
+    Config,
+};
+esp_bootloader_esp_idf::esp_app_desc!();
+
+#[main]
+fn main() -&gt; ! {
+    esp_hal::init(Config::default());
+    panic!("Welcome.")
+}</code></pre>
+<p>Running <code>cargo run --release</code>, we get:</p>
+<blockquote>
+<p>error: <code>#[panic_handler]</code> function required, but not found</p>
+</blockquote>
+<p>The panic handler is something we can define, or use a crate. For simplicity, let's use <code>esp-backtrace</code> with that feature, adding to <code>Cargo.toml</code> the following dependency:</p>
+<pre><code class="language-toml">esp-backtrace = { version = "0.18.1", features = [
+    "esp32c6",
+    "panic-handler",
+ ]}
+</code></pre>
+<p>And to <code>src/main.rs</code>:</p>
+<pre><code class="language-rust">// ...
+use esp_backtrace as _;
+// ...</code></pre>
+<p>Re-run <code>cargo run --release</code>, and we get a new error:</p>
+<blockquote>
+<p>error: failed to run custom build command for <code>esp-backtrace v0.18.1</code>
+...
+Exactly one of the following features must be enabled: defmt, println</p>
+</blockquote>
+<p>So we add one:</p>
+<pre><code class="language-diff">esp-backtrace = { version = "0.18.1", features = [
+    "esp32c6",
+    "panic-handler",
++   "println"
+]}
+</code></pre>
+<p>And yet, it errors:</p>
+<blockquote>
+<p>error: failed to run custom build command for <code>esp-println v0.16.1</code></p>
+<p>Exactly one of the following features must be enabled: jtag-serial, uart, auto, no-op</p>
+</blockquote>
+<p>This, it seems, would require that we add <code>esp-println</code>, and enable some of those features.</p>
+<p>Since <code>auto</code> is a default feature, we can add:</p>
+<pre><code class="language-toml">esp-println = { version = "0.16.1", features = [
+    "esp32c6",
+] }
+</code></pre>
+<p>Now, it will run and panic. Yay!</p>
+<p>Playing with these dependencies helps get a sense of what they are for. Also, to see how useful the compiler error messages can be.</p>
+<h2 id="print-something"><a class="header" href="#print-something">Print something</a></h2>
+<p>So far we've not printed anything, but given <code>esp-println</code> is already there, we only need to <code>use</code> it. Then we can <code>println!("Something")</code> and it should work.</p>
+<p>At this step, the code looks like:</p>
+<pre><code class="language-rust">#![no_std]
+#![no_main]
+use esp_hal::{
+    main,
+    Config,
+};
+use esp_backtrace as _;
+use esp_println::println;
+esp_bootloader_esp_idf::esp_app_desc!();
+
+#[main]
+fn main() -&gt; ! {
+    esp_hal::init(Config::default());
+    println!("println!");
+    panic!("Welcome.")
+}</code></pre>
+<h2 id="using-the-log-crate"><a class="header" href="#using-the-log-crate">Using the log crate</a></h2>
+<p>We add a few items:</p>
+<pre><code class="language-diff">use esp_backtrace as _;
++use esp_println::{logger,println};
++use log::info;
+esp_bootloader_esp_idf::esp_app_desc!();
+</code></pre>
+<p>And within <code>main</code>:</p>
+<pre><code class="language-diff">fn main() -&gt; ! {
+    esp_hal::init(Config::default());
+    +logger::init_logger_from_env();
+    +info!("SOME INFO!");
+    println!("println!");
+</code></pre>
+<p>Finally, on <code>Cargo.toml</code>:</p>
+<pre><code class="language-diff">esp-println = { version = "0.16.1", features = [
+"esp32c6",
++"log-04"
+] }
+# Manuallu, or use `cargo add log`
++log = "0.4.29"
+</code></pre>
+<p>So now we have learnt how to add a logger, if we need to.</p>
+<blockquote class="blockquote-tag blockquote-tag-note">
+<p class="blockquote-tag-title"><svg viewbox="0 0 16 16" width="18" height="18"><path d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8Zm8-6.5a6.5 6.5 0 1 0 0 13 6.5 6.5 0 0 0 0-13ZM6.5 7.75A.75.75 0 0 1 7.25 7h1a.75.75 0 0 1 .75.75v2.75h.25a.75.75 0 0 1 0 1.5h-2a.75.75 0 0 1 0-1.5h.25v-2h-.25a.75.75 0 0 1-.75-.75ZM8 6a1 1 0 1 1 0-2 1 1 0 0 1 0 2Z"></path></svg>Note</p>
+<p><code>examples/logging_0.rs</code> contains a solution. You can run it with the following command: <code>cargo run --example logging_0 --release</code>. You will need to have the settings above done correctly though!</p>
+</blockquote>
+<p>In the next logging section, we analyse using <code>defmt</code> instead.</p>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="logging---part-2"><a class="header" href="#logging---part-2">Logging - Part 2</a></h1>
+<p>Dependencies that may log data provide support to use <code>defmt</code> or <code>log</code>. Previously, we configured a package to use <code>log</code>, so now it will be quicker, but other aspects can be examined.</p>
+<p>As a recap:</p>
+<ul>
+<li><code>espflash</code> has built in support for <code>defmt</code>, <code>log</code> or none using the <code>-L</code> flag.</li>
+<li><code>esp-println</code> can use <code>defmt-espflash</code> or <code>log-04</code> features. As <a href="https://github.com/esp-rs/esp-hal/tree/main/esp-println">their docs</a> state:
+<blockquote>
+<p>Using the <code>defmt-espflash</code> feature, <code>esp-println</code> will install a <code>defmt</code> global logger.</p>
+</blockquote>
+</li>
+<li><code>esp-backtrace</code> can use <code>println</code> or <code>defmt</code> features, in order to print panic messages and backtraces.</li>
+</ul>
+<p>Let's update the package to use <code>defmt</code>.</p>
+<h2 id="exercise-5"><a class="header" href="#exercise-5">Exercise</a></h2>
+<p>Go to <code>exercises/defmt</code> directory.</p>
+<ol>
+<li>
+<p>Update the runner's logger in <code>.cargo/config.toml</code>:</p>
+<pre><code class="language-diff">[target.riscv32imac-unknown-none-elf]
+- runner = "espflash flash --monitor"
++ runner = "espflash flash --monitor -L defmt"
+</code></pre>
+<p>so that <code>espflash</code> monitor can decode the format of the <code>defmt</code> messages received.</p>
+</li>
+<li>
+<p>Update <code>Cargo.toml</code> to include the needed features:</p>
+<pre><code class="language-diff">esp-println = { version = "0.16.0", features = [
+    "esp32c6",
+-     "log-04",
++     "defmt-espflash",
+] }
+# (...)
+esp-backtrace = { version = "0.18.0", features = [
+    "esp32c6",
+    "panic-handler",
+-   "println"
++   "defmt",
+]}
+</code></pre>
+</li>
+<li>
+<p>Due to the <a href="https://defmt.ferrous-systems.com/setup#linker-script">linking process</a> we need to add <code>defmt</code> linker script to <code>cargo/config.toml</code>:</p>
+<pre><code class="language-diff">rustflags = [
+  # ....
++  "-C", "link-arg=-Tdefmt.x",
+]
+</code></pre>
+</li>
+<li>
+<p>Add <a href="https://docs.rs/defmt/latest/defmt/">defmt</a> to the dependencies, and remove <code>log</code>.</p>
+</li>
+<li>
+<p><strong>Logging level</strong>: Use the <code>defmt::println!</code> and some <a href="https://docs.rs/defmt/latest/defmt/#macros">defmt macros</a> to print a few messages.</p>
+<ul>
+<li>When building the app, set <a href="https://defmt.ferrous-systems.com/filtering.html?highlight=DEFMT*LOG#defmt_log"><code>DEFMT_LOG</code></a> level as done for <code>ESP_LOG</code> earlier (within <code>.cargo/config.toml</code>, under <code>[env]</code> table).</li>
+<li>An alternative to changing <code>.cargo/config.toml</code> is using <code>DEFMT_LOG=&lt;value&gt; cargo run --release</code>; the same is valid for <code>ESP_LOG</code>.</li>
+</ul>
+</li>
+<li>
+<p>Add a <code>panic!</code> macro to trigger a panic with a <code>defmt</code> message.</p>
+</li>
+</ol>
+<blockquote class="blockquote-tag blockquote-tag-note">
+<p class="blockquote-tag-title"><svg viewbox="0 0 16 16" width="18" height="18"><path d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8Zm8-6.5a6.5 6.5 0 1 0 0 13 6.5 6.5 0 0 0 0-13ZM6.5 7.75A.75.75 0 0 1 7.25 7h1a.75.75 0 0 1 .75.75v2.75h.25a.75.75 0 0 1 0 1.5h-2a.75.75 0 0 1 0-1.5h.25v-2h-.25a.75.75 0 0 1-.75-.75ZM8 6a1 1 0 1 1 0-2 1 1 0 0 1 0 2Z"></path></svg>Note</p>
+<p><code>examples/logging_1.rs</code> contains a solution. You can run it with the following command: <code>cargo run --example logging_1 --release</code>. You will need to have the settings above done correctly though!</p>
+</blockquote>
+<h2 id="suggested-reading-5"><a class="header" href="#suggested-reading-5">Suggested reading</a></h2>
+<p>Short articles that give more context:</p>
+<ul>
+<li>defmt <a href="https://defmt.ferrous-systems.com/setup#linker-script">linking process</a> for setting the compilation-time linker up.</li>
+<li>defmt <a href="https://defmt.ferrous-systems.com/filtering.html?highlight=DEFMT*LOG#defmt_log">DEFMT_LOG</a> environment variable.</li>
+<li>esp-println <a href="https://github.com/esp-rs/espflash/blob/main/espflash/README.md#logging-format">logging formats</a>.</li>
+</ul>
+<!--esp links-->
+<!-- [esp-backtrace]: https://github.com/esp-rs/esp-hal/tree/main/esp-backtrace -->
+<!-- [espflash]: https://github.com/esp-rs/espflash -->
+<!--defmt links-->
+<!-- This is interesting but seems too much for such a basic tutorial. -->
+<!-- Let's first briefly discuss the topic of _logging_. -->
+<!---->
+<!-- Since `println!`, `print!` and `dbg!` are provided by `std`, which we don't have, we need to provide them. -->
+<!---->
+<!-- These macros are provided by `esp_println`. For [example, here](https://github.com/esp-rs/esp-hal/blob/9e4c652d1aa1d1cbc8f2483c93b7d98d0ba1bcb6/esp-println/src/lib.rs#L40): -->
+<!-- ```rust -->
+<!-- /// Prints to the selected output, with a newline. -->
+<!-- #[cfg(not(feature = "no-op"))] -->
+<!-- #[macro_export] -->
+<!-- macro_rules! println { -->
+<!--   // ... -->
+<!-- ``` -->
+<!---->
+<!-- These macros are available without any of the loggers enabled. -->
+<!---->
+<!-- There are many loggers we could add, besides that provided by `esp_println`. For example, we could select `log`. This one, requires us to implement `log::Log` trait. Something like: -->
+<!---->
+<!-- ```rust -->
+<!-- // Some struct -->
+<!-- struct EspLogger; -->
+<!-- impl log::Log for EspLogger { -->
+<!--     // ... -->
+<!-- ``` -->
+<!---->
+<!-- When adding the feature `log-04`, the crate `esp_println` will enable an implementation of that logger. And that will be used for `log::info!` and the other macros. All of them, in their implementation, use [their `println!` macro.](https://github.com/esp-rs/esp-hal/blob/9e4c652d1aa1d1cbc8f2483c93b7d98d0ba1bcb6/esp-println/src/logger.rs#L86) -->
+<!---->
+<!-- A similar situation happens with `defmt`: -->
+<!---->
+<!-- ```rust -->
+<!-- #[defmt::global_logger] -->
+<!-- pub struct Logger; -->
+<!-- unsafe impl defmt::Logger for Logger { -->
+<!--     // ... -->
+<!-- ``` -->
+<!---->
+<!-- But in this case, there is no use of the macro (it uses some more efficient mechanism). -->
+<!---->
+<!-- [`defmt`][defmt] is an efficient logging framework. Just like `log`, the `defmt` crate provides `defmt::info`, `defmt::warn` and other macros. It also has a `defmt::println!` macro. -->
+<!---->
+<!-- The name `defmt` comes from *deferred formatting*: -->
+<!-- > (...) instead of formatting `255u8` into `"255"` and sending the string, the single-byte binary data is sent to a second machine, the host, and the formatting happens there. -->
+<!---->
+<!-- So the formatting is *deferred* to the host. The other bit improving efficiency is *compression*: -->
+<!---->
+<!-- > `defmt`’s string compression consists of building a table of string literals, like `"Hello, world"` or `"The answer is {:?}"`, at compile time. At runtime the logging machine sends *indices* instead of complete strings. -->
+<!---->
+<!-- Source: [defmt docs]. -->
+<!---->
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="debugger---set-up"><a class="header" href="#debugger---set-up">Debugger - Set Up</a></h1>
+<p>Programs are debugged using:</p>
+<ul>
+<li>Printing value of a variable (e.g. <code>println!</code>).</li>
+<li>Asserting the value of a variable (e.g <code>assert!</code>).</li>
+<li>Writing unit tests.</li>
+</ul>
+<p>To access finer execution details, we can use a <em>debugger</em>.</p>
+<h2 id="gdb-and-openocd"><a class="header" href="#gdb-and-openocd">GDB and OpenOCD</a></h2>
+<p>Two programs will be needed:</p>
+<ul>
+<li>GDB: with <em>multiarch</em> to support riscv32 architecture.
+<ul>
+<li>Linux: <code>sudo apt-get install gdb-multiarch</code>.</li>
+<li>MacOS: <code>brew install gdb</code> (it's multiarch).</li>
+</ul>
+</li>
+<li>OpenOCD: handles the communication with the board.
+<ul>
+<li>The installation is described below.</li>
+</ul>
+</li>
+</ul>
+<p>Download the latest <code>openocd</code> for your laptop architecture from the <code>openocd-esp32</code> <a href="https://github.com/espressif/openocd-esp32/releases">github repo</a>. The repo is a fork of <code>openocd</code> targeted at <code>esp32</code> boards.</p>
+<blockquote class="blockquote-tag blockquote-tag-important">
+<p class="blockquote-tag-title"><svg viewbox="0 0 16 16" width="18" height="18"><path d="M0 1.75C0 .784.784 0 1.75 0h12.5C15.216 0 16 .784 16 1.75v9.5A1.75 1.75 0 0 1 14.25 13H8.06l-2.573 2.573A1.458 1.458 0 0 1 3 14.543V13H1.75A1.75 1.75 0 0 1 0 11.25Zm1.75-.25a.25.25 0 0 0-.25.25v9.5c0 .138.112.25.25.25h2a.75.75 0 0 1 .75.75v2.19l2.72-2.72a.749.749 0 0 1 .53-.22h6.5a.25.25 0 0 0 .25-.25v-9.5a.25.25 0 0 0-.25-.25Zm7 2.25v2.5a.75.75 0 0 1-1.5 0v-2.5a.75.75 0 0 1 1.5 0ZM9 9a1 1 0 1 1-2 0 1 1 0 0 1 2 0Z"></path></svg>Important</p>
+<p>Please, check the commands before executing them.</p>
+</blockquote>
+<ul>
+<li>For Linux AMD-64:
+<pre><code class="language-bash"># Linux amd64. See releases page for other archs.
+cd ${HOME} # go to home so we download in a visible place.
+OPENOCD_ZIP_NAME=openocd-esp32-linux-amd64-0.12.0-esp32-20250707.tar.gz
+DATE=v0.12.0-esp32-20250707
+wget https://github.com/espressif/openocd-esp32/releases/download/${DATE}/${OPENOCD_ZIP_NAME}
+tar -xvf ${OPENOCD_ZIP_NAME}
+</code></pre>
+</li>
+<li>For MacOS arm64:
+<pre><code class="language-bash">cd ${HOME}
+OPENOCD_ZIP_NAME=openocd-esp32-macos-arm64-0.12.0-esp32-20250707.tar.gz
+DATE=v0.12.0-esp32-20250707
+wget https://github.com/espressif/openocd-esp32/releases/download/${DATE}/${OPENOCD_ZIP_NAME}
+tar -xvf ${OPENOCD_ZIP_NAME}
+</code></pre>
+</li>
+</ul>
+<blockquote class="blockquote-tag blockquote-tag-important">
+<p class="blockquote-tag-title"><svg viewbox="0 0 16 16" width="18" height="18"><path d="M0 1.75C0 .784.784 0 1.75 0h12.5C15.216 0 16 .784 16 1.75v9.5A1.75 1.75 0 0 1 14.25 13H8.06l-2.573 2.573A1.458 1.458 0 0 1 3 14.543V13H1.75A1.75 1.75 0 0 1 0 11.25Zm1.75-.25a.25.25 0 0 0-.25.25v9.5c0 .138.112.25.25.25h2a.75.75 0 0 1 .75.75v2.19l2.72-2.72a.749.749 0 0 1 .53-.22h6.5a.25.25 0 0 0 .25-.25v-9.5a.25.25 0 0 0-.25-.25Zm7 2.25v2.5a.75.75 0 0 1-1.5 0v-2.5a.75.75 0 0 1 1.5 0ZM9 9a1 1 0 1 1-2 0 1 1 0 0 1 2 0Z"></path></svg>Important</p>
+<p>Below, it is assumed the output of the command above was a directory named <code>openocd-esp32</code>.</p>
+</blockquote>
+<h2 id="modify-the-path"><a class="header" href="#modify-the-path">Modify the PATH</a></h2>
+<p>Let's add a path to the <code>PATH</code> variable, by editing the <code>.zshrc</code> or <code>.bashrc</code> file.</p>
+<p>Additionally, the <code>OPENOCD_SCRIPTS</code> variable is defined. <code>openocd</code> uses that variable to find the board's configuration.</p>
+<pre><code class="language-bash"># add `openocd` to PATH
+export PATH=${HOME}/openocd-esp32/bin:${PATH}
+# Define openocd scripts/configs location.
+export OPENOCD_SCRIPTS="${HOME}/openocd-esp32/share/openocd/scripts"
+</code></pre>
+<p>Then source the profile:</p>
+<pre><code class="language-bash">source ~/.bashrc # or ~/.zshrc
+</code></pre>
+<p>Confirm installation with <code>openocd --version</code>. Now to some exercises.</p>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="debugging---exercises"><a class="header" href="#debugging---exercises">Debugging - Exercises</a></h1>
+<p>Now that <code>gdb</code> or <code>gdb-multiarch</code> are set up, let's do some exercises.</p>
+<ol>
+<li>Access <code>exercises/gdb_hello_world</code></li>
+<li>Inspect the configuration files <code>openocd.cfg</code> (for <code>openocd</code> ) and <code>.gdbinit</code> (for <code>gdb</code>).</li>
+<li>Execute <code>cargo run</code>, leave out <code>--release</code> to use the development profile.
+<ul>
+<li>Without it, cargo will remove / optimise lines.</li>
+<li>We <em>should</em> debug with <code>--release</code> to ensure the best outcomes.</li>
+<li>But this examples is just to get started.</li>
+</ul>
+</li>
+<li>Run <code>gdb -x gdbinit -q</code> (or <code>gdb-multiarch</code> on Linux) in one terminal, and <code>openocd</code> in another (at the same directory!).
+<ul>
+<li>In the image, <code>_peripherals</code> has not yet been assigned. <code>gdb</code> stopped execution there.
+The window at the bottom half is our <code>(gdb)</code> prompt. 
+<div class="center w420">
+ <a href="assets/gdb.png">
+ <img src="assets/gdb.png" alt="GDB screenshot showing our main.rs source code. It has a B where the breakpoint is." />
+ </a>
+ </div>
+
+</li>
+</ul>
+</li>
+<li>Add a <code>break</code> point where <code>a/=2</code>, then <code>print</code> the resulting value.</li>
+<li>Exit with <code>Ctrl+D</code> or <code>Ctrl+C</code>.</li>
+</ol>
+<h2 id="suggested-reading-6"><a class="header" href="#suggested-reading-6">Suggested Reading</a></h2>
+<ul>
+<li><a href="https://docs.rust-embedded.org/discovery-mb2/05-meet-your-software/debug-it.html">MB2</a> article on Debugging.</li>
+</ul>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="intro"><a class="header" href="#intro">Intro</a></h1>
+<p>This chapter is about communication protocols and peripherals used with them.</p>
+<p>A <em>communication protocol</em> is a series of steps that the devices involved agree upon, in order to encode and decode the messages exchanged (communicate).</p>
+<ol>
+<li>Asynchronous serial communication with the UART peripheral.</li>
+<li>I2C serial communication protocol and peripheral.</li>
+<li>SPI serial communication protocol and peripheral.</li>
+</ol>
+<p>There are many others! And sometimes devices have their own language and their datasheet must be read. But the ones listed above are very common.</p>
+<h2 id="have-fun"><a class="header" href="#have-fun">Have fun</a></h2>
+<p>Check out any website listing sensors, and without tempting yourself to buy things, look at which communication protocols they use. Here are a few from <a href="https://commons.wikimedia.org/">Wikimedia Commons</a>:</p>
+<ul>
+<li>
+<p>Analog to Digital Converter, uses I2C protocol.</p>
+  
+<div class="w150"> <!--other classes: w220, w420-->
+  <!--Start with `/` following path from `src`.-->
+      <a href="assets/16bit_ADC_Card.jpg">
+          <img alt="16 Bit Analog to Digital Converter, uses I2C protocol." src="assets/16bit_ADC_Card.jpg" />
+      </a>
+      By <a href="https://commons.wikimedia.org/wiki/User:Pradeep717" title="User:Pradeep717">Pradeep717</a> - <span class="int-own-work" lang="en">Own work</span>, <a href="https://creativecommons.org/licenses/by-sa/4.0" title="Creative Commons Attribution-Share Alike 4.0">CC BY-SA 4.0</a>, <a href="https://commons.wikimedia.org/w/index.php?curid=88448335">Link</a>
+  </div>
+
+</li>
+<li>
+<p>Barometric Pressure Sensor</p>
+  
+<div class="w150"> <!--other classes: w220, w420-->
+  <!--Start with `/` following path from `src`.-->
+      <a href="assets/Adafruit_BMP085_pressure_sensor_module.jpg">
+          <img alt="Barometric Pressure Sensor, uses I2C" src="assets/Adafruit_BMP085_pressure_sensor_module.jpg" />
+      </a>
+      
+<p>
+      <a href="https://commons.wikimedia.org/wiki/File:Adafruit_BMP085_pressure_sensor_module.jpg">oomlout</a>, <a href="https://creativecommons.org/licenses/by-sa/2.0">CC BY-SA 2.0</a>, via Wikimedia Commons
+      </p>
+
+  </div>
+
+</li>
+<li>
+<p>Temperature Humidity Sensor (its own protocol)</p>
+  
+<div class="w150"> <!--other classes: w220, w420-->
+  <!--Start with `/` following path from `src`.-->
+      <a href="assets/Temperature-humidity-sensor-module.jpg">
+          <img alt="Temperature humidity sensor, uses I2C" src="assets/Temperature-humidity-sensor-module.jpg" />
+      </a>
+      
+<p>
+      <a href="https://commons.wikimedia.org/wiki/File:Temperature-humidity-sensor-module.jpg">Ji Hyoung Ryu, Muhammad Irfan, Aamir Reyaz</a>, <a href="https://creativecommons.org/licenses/by/4.0">CC BY 4.0</a>, via Wikimedia Commons
+      </p>
+
+  </div>
+
+</li>
+<li>
+<p>Pressure Sensor (SPI and I2C)</p>
+  
+<div class="w150"> <!--other classes: w220, w420-->
+  <!--Start with `/` following path from `src`.-->
+      <a href="assets/SparkFun_Pressure_Sensor.jpg">
+          <img alt="Pressure Sensor, I2C and SPI support." src="assets/SparkFun_Pressure_Sensor.jpg" />
+      </a>
+      
+<p>
+      <a href="https://commons.wikimedia.org/wiki/File:SparkFun_Pressure_Sensor_Breakout_-_MS5803-14BA_12909.jpg">SparkFun</a>, <a href="https://creativecommons.org/licenses/by/2.0">CC BY 2.0</a>, via Wikimedia Commons
+      </p>
+
+  </div>
+
+</li>
+</ul>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="uart---part-1"><a class="header" href="#uart---part-1">UART - Part 1</a></h1>
+<p>UART stands for Universal Asynchronous Receiver and Transmitter.</p>
+<p><em>Asynchronous</em> means that they don't have a dedicated clock line, since all it has is two data lines (Rx, Tx in the diagram below). This will be become more clear after learning I2C.</p>
+<p>The diagram below shows two UARTs wired for communication; each is connected to a local data bus.</p>
+<pre class="mermaid">graph LR
+    subgraph uart2 [UART 2]
+        direction TB
+        Tx2
+        Rx2
+    end
+    subgraph uart1 [UART 1]
+        direction TB
+        Tx1
+        Rx1
+    end
+    Tx1--&gt; Rx2
+    Tx2--&gt; Rx1
+    DB2[Data Bus 2] &lt;--&gt; uart2
+    DB1[Data Bus 1] &lt;--&gt; uart1
+</pre>
+
+<p>A UART has two data lines: one transmits data (Tx), one receives data (Rx). Each connects to the complementary line on the other UART. For example, the Tx1 line of UART 1, to the Rx2 line of UART 2.</p>
+<p>The Data Bus is either where the transmitter reads data from, or where the receiver writes data to.</p>
+<h2 id="communication"><a class="header" href="#communication">Communication</a></h2>
+<p>Most communication <em>peripherals</em> take the name from the communication <em>protocol</em>, but not UART. So...which protocol does the UART peripheral use?</p>
+<p>UART uses Asynchronous Serial Communication which is an "umbrella" or general term. There isn't a subterm / protocol name. So we say: UART uses Asynchronous Serial Communication. How it works for UART is shown in the steps a bit further down.</p>
+<p>The "Asynchronous" part was explained in the first paragraphs. "Serial Communication" means sending one bit after another; that is, in series.</p>
+<ul>
+<li>
+<p>Example: Sending data from the board to the laptop. This is what happens at a high level:</p>
+<ol>
+<li>The sending-UART's Tx line uses START and END signals to mark when the communication starts and ends.</li>
+<li>A UART device reads a byte from the data bus.</li>
+<li>It serialises it, and wraps it with metadata bits. The whole item is now called a <em>frame</em>.</li>
+<li>Then sends the bits one-by-one to the other device (through the Tx line).</li>
+</ol>
+</li>
+</ul>
+<p>The other UART receives the series of bits (in the Rx line), uses the wrapping bits and places the data bits in the data bus.</p>
+<p>Since there isn't a clock line, the transmission rate must be set as a parameter, called the <em>baud rate</em>, in bits per second.</p>
+<p>Besides the baud rate, the <em>data</em>, the <em>parity</em>, and the <em>stop</em> bits must be set equal on each device. A mismatch of speed or configuration bits will cause the devices to decode information incorrectly.</p>
+<p>As an example:</p>
+<div class="center w420"> <!--other classes: w220, w420-->
+<!--Start with `/` following path from `src`.-->
+    <a href="assets/async_serial_wikipedia.png">
+        <img alt="Wikipedia Asynchronous Communication image, described below" src="assets/async_serial_wikipedia.png" />
+    </a>
+    
+<p>From <a href="https://en.wikipedia.org/wiki/Asynchronous_serial_communication">Asynchronous Communication</a> by <a href="https://en.wikipedia.org/wiki/User:Plugwash" class="extiw" title="en:User:Plugwash">Plugwash</a> (Public Domain)</p>
+
+</div>
+
+<p>And the description of the image (slightly modified):</p>
+<blockquote>
+<p>In this diagram, two bytes are sent, each consisting of a <em>start</em> bit, followed by eight <em>data</em> bits (bits 0-7), and one <em>stop</em> bit, for a 10-bit character frame.</p>
+<p>The last data bit is sometimes used as a <em>parity</em> bit.</p>
+<p>The number of data and formatting bits, the order of data bits, the presence or absence of a parity bit, the form of parity (even or odd) and the transmission speed (frequency) <strong>must be pre-agreed</strong> by the communicating parties.</p>
+<p>The "stop bit" is actually a "stop period"; the stop period of the transmitter may be arbitrarily long. It cannot be shorter than a specified amount, usually 1 to 2 bit times. The receiver requires a shorter stop period than the transmitter.</p>
+<p>At the end of each character, the receiver stops briefly to wait for the next start bit. It is this difference which keeps the transmitter and receiver synchronized.</p>
+</blockquote>
+<h2 id="speed-calculation"><a class="header" href="#speed-calculation">Speed Calculation</a></h2>
+<p>With a set up like:</p>
+<ul>
+<li>8 <em>data bits</em>, 1 <em>parity</em>, and 1 <em>stop</em> bit (10 bits)
+<ul>
+<li>Note: this is called a <em>frame</em>.</li>
+</ul>
+</li>
+<li><em>baud rate</em> 115200 bits/second</li>
+</ul>
+<p>It will send 11520 <em>frames</em> per second. Since it includes 1 byte per frame (10 bits), it's also 11520 byte per second. Or 11520/1024 to get it in KiB (about 11 KiB/s). That's about 1 short essay per second.</p>
+<h2 id="suggested-reading-7"><a class="header" href="#suggested-reading-7">Suggested Reading</a></h2>
+<ul>
+<li><a href="https://www.circuitbasics.com/basics-uart-communication/">A bit more on UART</a>: this is a short article, only looks long due to the comments section.</li>
+</ul>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="uart---part-2"><a class="header" href="#uart---part-2">UART - Part 2</a></h1>
+<p>Consider our boilerplate:</p>
+<pre><code class="language-rust">#![no_std]
+#![no_main]
+use esp_hal::{main, Config};
+use esp_backtrace as _;
+use esp_println as _;
+esp_bootloader_esp_idf::esp_app_desc!();
+
+#[main]
+fn main() -&gt; ! {
+  let peripherals = esp_hal::init(Config::default())
+  loop {}
+}</code></pre>
+<p>How do we get to use a UART peripheral from there? How do we configure the peripheral? Which configuration options do you expect? Try getting a sense of what to do first (maybe checking <code>esp_hal</code> docs.)</p>
+<blockquote class="blockquote-tag blockquote-tag-warning">
+<p class="blockquote-tag-title"><svg viewbox="0 0 16 16" width="18" height="18"><path d="M6.457 1.047c.659-1.234 2.427-1.234 3.086 0l6.082 11.378A1.75 1.75 0 0 1 14.082 15H1.918a1.75 1.75 0 0 1-1.543-2.575Zm1.763.707a.25.25 0 0 0-.44 0L1.698 13.132a.25.25 0 0 0 .22.368h12.164a.25.25 0 0 0 .22-.368Zm.53 3.996v2.5a.75.75 0 0 1-1.5 0v-2.5a.75.75 0 0 1 1.5 0ZM9 11a1 1 0 1 1-2 0 1 1 0 0 1 2 0Z"></path></svg>Warning</p>
+<p>The <a href="https://docs.espressif.com/projects/esp-dev-kits/en/latest/esp32c6/_images/esp32-c6-devkitc-1-pin-layout.png">pinouts</a> won't help. UART is connected to <code>UART-USB</code> bridge (a small IC near the USB ports). So when passing the <code>with_rx</code> and <code>with_tx</code> to the driver, we must choose the GPIOs hardwired to the UART-USB bridge. These are GPIO16, GPIO17. For sending to GPIO-header-pins (those on the sidelines) we could pass any GPIO (but not when using the bridge.)</p>
+</blockquote>
+<details>
+<summary>======!Spoiler Alert!====== (click for a solution)</summary>
+<p>There are many other details in the <code>main.rs</code> file, but the most critical is to make sense of this snippet:</p>
+<pre><code class="language-rust">let uart_config = uart::Config::default()
+    .with_baudrate(115200)
+    // ... other settings
+
+let mut uart = Uart::new(peripherals.UART0, uart_config)
+    //   driver^^^^^^^^^       periph^^^^^ config^^^^^^
+    .expect("Should set up the driver.")
+    // Route through the UART-USB bridge
+    .with_tx(peripherals.GPIO16)
+    .with_rx(peripherals.GPIO17);</code></pre>
+<p>That is another boilerplate we can think of: <code>init</code> device, grab <code>peripheral</code>, pass it to a driver along with its config.</p>
+<p>A list of some of the <a href="https://docs.espressif.com/projects/rust/esp-hal/1.0.0/esp32c6/esp_hal/peripherals/index.html">peripherals</a> is:</p>
+<pre><code class="language-txt"># (Most of these are unstable)
+GPIO0-23, GPIO27 peripheral singleton
+I2C0 peripheral singleton
+I2S0 peripheral singleton
+LEDC peripheral singleton
+RNG peripheral singleton
+SPI0-2 peripheral singleton
+TIMG0-1 peripheral singleton
+UART0-1 peripheral singleton
+USB_DEVICE peripheral singleton
+WIFI peripheral singleton
+</code></pre>
+</details>
+<h2 id="exercise-6"><a class="header" href="#exercise-6">Exercise</a></h2>
+<ol>
+<li>Access <code>exercises/uart/src/main.rs</code>. The comments within will guide you through.</li>
+<li>If not installed install <code>screen</code> (for example <code>sudo apt install screen</code>).</li>
+<li>Before running it, note that we exit <code>screen</code> with <code>Ctrl+a+k</code> (then pressing <code>y</code> when prompted for it).</li>
+<li>After flashing the board (any USB port) connect it through <strong>ch343</strong> (or <strong>UART</strong>) tagged port.</li>
+<li>Run <code>screen &lt;device_path&gt; &lt;baud_rate&gt;</code>.
+<ul>
+<li><code>&lt;device_path&gt;</code> is <em>probably</em> <code>/dev/ttyACM0</code> on Linux and <code>/dev/tty.usbmodem0</code> MacOS.</li>
+<li>To be sure, list them with <code>ls /dev/tty*</code> and try to figure out which one is the board.</li>
+<li><code>&lt;baud_rate&gt;</code> must match the rate in the code. For example <code>115200</code>.</li>
+</ul>
+</li>
+<li>Remember to press the RESET board button once.</li>
+<li>Try the echo server by typing in the keyboard, and send with <kbd>Enter</kbd> key.</li>
+</ol>
+<blockquote class="blockquote-tag blockquote-tag-note">
+<p class="blockquote-tag-title"><svg viewbox="0 0 16 16" width="18" height="18"><path d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8Zm8-6.5a6.5 6.5 0 1 0 0 13 6.5 6.5 0 0 0 0-13ZM6.5 7.75A.75.75 0 0 1 7.25 7h1a.75.75 0 0 1 .75.75v2.75h.25a.75.75 0 0 1 0 1.5h-2a.75.75 0 0 1 0-1.5h.25v-2h-.25a.75.75 0 0 1-.75-.75ZM8 6a1 1 0 1 1 0-2 1 1 0 0 1 0 2Z"></path></svg>Note</p>
+<p>A solution is provided in <code>examples/uart.rs</code>.</p>
+</blockquote>
+<h2 id="imagining-a-projects"><a class="header" href="#imagining-a-projects">Imagining a projects</a></h2>
+<p>The esp32-c6 board has 2 UARTs: UART0 and UART1.</p>
+<p>Technically, we could use UART0 just as we did, and UART1 could other GPIOs connected to GPIO-header-pins. By linking this to USB-UART converter and this in turn to a laptop, we could chat.</p>
+<p>Two laptops could chat via the board.</p>
+<h2 id="suggested-reading-8"><a class="header" href="#suggested-reading-8">Suggested Reading</a></h2>
+<ul>
+<li>This is a good time to check <a href="https://docs.espressif.com/projects/rust/esp-hal/1.0.0/esp32c6/esp_hal/index.html"><code>esp_hal</code></a>, especially their <a href="https://docs.espressif.com/projects/rust/esp-hal/1.0.0/esp32c6/esp_hal/peripherals/index.html">peripherals</a> section, and anything you find interesting.</li>
+</ul>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="i2c"><a class="header" href="#i2c">I2C</a></h1>
+<p>I2C (inter-integrated communication) is a <em>protocol</em> and also a <em>peripheral</em>. We are concerned with the <em>protocol</em>.</p>
+<p>"inter" in the name refers to <em>within</em> the board, "integrated" refers to integrated-circuits. In other words: communication between multiple integrated circuits within a board (or short distances).</p>
+<p>Yet, devices supporting I2C need hardware that understands the protocol rules. Here, we will focus on its usage and most relevant concepts.</p>
+<blockquote class="blockquote-tag blockquote-tag-note">
+<p class="blockquote-tag-title"><svg viewbox="0 0 16 16" width="18" height="18"><path d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8Zm8-6.5a6.5 6.5 0 1 0 0 13 6.5 6.5 0 0 0 0-13ZM6.5 7.75A.75.75 0 0 1 7.25 7h1a.75.75 0 0 1 .75.75v2.75h.25a.75.75 0 0 1 0 1.5h-2a.75.75 0 0 1 0-1.5h.25v-2h-.25a.75.75 0 0 1-.75-.75ZM8 6a1 1 0 1 1 0-2 1 1 0 0 1 0 2Z"></path></svg>Note</p>
+<p>An integrated circuit (IC) is an extremely packed, microscale version of a circuit. We could build one with wires, resistors and other components (and tons of effort).</p>
+<p>ICs are the "black squares" in the PCB, but are not always visible, for example those within the MCU, or inside a sensor.</p>
+</blockquote>
+<p>I2C is within the Synchronous Serial Communication umbrella:</p>
+<ul>
+<li>It is Serial because it transmits one bit at a time.</li>
+<li>It uses two lines: a serial clock-line (SCL) and a serial data-line (SDA).</li>
+<li>The SCL makes it a synchronous protocol.</li>
+</ul>
+<p>The complete diagram is in <a href="https://www.ti.com/lit/an/sbaa565/sbaa565.pdf">this document</a> (section 2.1), but a similar one from Wikipedia is shown below:</p>
+<div class="center w320"> <!--other classes: w220, w420-->
+<!--Start with `/` following path from `src`.-->
+    <a href="assets/i2c_wikipedia.svg">
+        <img alt="Diagram showing the two wires SDA, SCL and many devices linked to them." src="assets/i2c_wikipedia.svg" />
+    </a>
+    
+<p> By <a href="https://commons.wikimedia.org/w/index.php?title=User:Tim_Mathias&amp;action=edit&amp;redlink=1" class="new" title="User:Tim Mathias (page does not exist)">Tim Mathias</a> - <span class="int-own-work" lang="en">Own work</span>, <a href="https://creativecommons.org/licenses/by-sa/4.0" title="Creative Commons Attribution-Share Alike 4.0">CC BY-SA 4.0</a>, <a href="https://commons.wikimedia.org/w/index.php?curid=111975651">Link</a></p>
+
+</div>
+
+<ul>
+<li>
+<p><strong>SDA</strong> is the Serial Data line, the road data travels on (in any direction). <strong>SCL</strong> is the Serial Clock line, which times when to read-from or write-to SDA.</p>
+</li>
+<li>
+<p>The <strong>Vdd</strong> line pulls up the voltage in the SDA and SCL lines. There is a <strong>GND</strong> line as well, omitted here.</p>
+</li>
+<li>
+<p>All the coloured blocks are devices, 3 can be targets only, one can be controller only. <code>µC</code> means microcontroller, and Rp are resistors.</p>
+</li>
+</ul>
+<p>The last bit of terminology are the <em>roles</em>:</p>
+<ul>
+<li>Controller (formerly <em>master</em>): initiates communication. Microcontrollers are always in the controller role.</li>
+<li>Target (formerly <em>slave</em>): the target of the controller. Most devices –except MCUs– are targets.</li>
+</ul>
+<p>And the <em>modes</em>: whichever the role is, a device can either be the receiver or the transmitter of data.</p>
+<h2 id="communication-1"><a class="header" href="#communication-1">Communication</a></h2>
+<p>The high level view of the protocol is:</p>
+<ol>
+<li>A controller broadcasts START bit.</li>
+<li>It then broadcasts a <em>target device address</em> (usually 7 bits).</li>
+<li>Then sends a single bit where 0 receiver, 1 means transmitter.</li>
+<li>If the broadcasted <em>address</em> matches the ID of a target, the target replies with an acknowledgement and the communication starts.</li>
+<li>Now 8 bits of <em>data</em> are sent (either direction). The receiver always sends an acknowledgment bit.
+<ul>
+<li>This step can repeat many times.</li>
+</ul>
+</li>
+<li>No other device will transmit data during this time. It's "locked".</li>
+<li>Finally the controller broadcasts a STOP bit, and the bus is unlocked.</li>
+</ol>
+<p>Here, most bits are sent through SDA, but the SCL also helps define when communication starts and ends, and times when to read from SDA.</p>
+<p>The speed of the communication is a bit faster than UART's deppending on the mode, in the order of 10 KBps to 100 KBps.</p>
+<h2 id="for-curiosity"><a class="header" href="#for-curiosity">For curiosity</a></h2>
+<ul>
+<li>Search for "OLED I2C", or just any sensors. Many will support this or some of the already-learnt protocols. For I2C there will be a Vdd, GND, SDA, SCL lines, as expected.</li>
+<li>Don't buy more stuff! It's just to learn. You may even have some sensor supporting I2C already.</li>
+</ul>
+<h2 id="suggested-reading-9"><a class="header" href="#suggested-reading-9">Suggested Reading</a></h2>
+<!-- - [Basic concept of IC][IC] -->
+<ul>
+<li><a href="https://www.circuitbasics.com/basics-of-the-i2c-communication-protocol/">I2C Protocol</a>: explaions the protocol in a bit more detail than done here.</li>
+<li><a href="https://www.ti.com/lit/an/sbaa565/sbaa565.pdf">Texas Instruments I2C</a> subsection 2.1 (specially the schematic they have is quite good).</li>
+</ul>
+<!-- [IC]: https://learn.sparkfun.com/tutorials/integrated-circuits/all -->
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="gdb-commands"><a class="header" href="#gdb-commands">GDB Commands</a></h1>
+<p>GDB basic commands, classified with respect to their purpose.</p>
+<h2 id="program-flow"><a class="header" href="#program-flow">Program Flow</a></h2>
+<ul>
+<li><code>next</code> step one line over.</li>
+<li><code>continue</code> or <code>c</code>: continue executing up to next break point.</li>
+<li><code>break fn_name</code>: break point at function name.
+<ul>
+<li>There may be many with same name. So we need the path.
+<ul>
+<li>For example: <code>break gdb_hello_world::__risc_v_rt__main</code></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><code>break lineno</code>: break point at line number of currently-focused file.
+<ul>
+<li>Example: <code>break 19</code>, or <code>br 19</code>.</li>
+</ul>
+</li>
+<li><code>break my_file.rs:lineno</code>: example <code>break main.rs:17</code>.</li>
+<li><code>monitor reset halt</code>: restarts and halts it.</li>
+<li><code>load</code>: if we only use <code>cargo build</code>, then we can <code>flash</code> using <code>load</code>.
+<ul>
+<li>Within <code>gdb</code> type <code>load</code>. It'll flash the file to the MCU.</li>
+</ul>
+</li>
+</ul>
+<h2 id="layout"><a class="header" href="#layout">Layout</a></h2>
+<ul>
+<li><code>layout src</code>: shows source code and CLI.</li>
+<li><code>layout asm</code>: shows assembly source and CLI.</li>
+<li><code>tui disable</code>: to disable the layout.</li>
+</ul>
+<h2 id="overviews"><a class="header" href="#overviews">Overviews</a></h2>
+<ul>
+<li><code>info break</code>: to show breakpoints</li>
+<li><code>info locals</code>: to show variables.</li>
+<li><code>print x</code>: to print variable <code>x</code>. Also <code>print &amp;x</code> prints the address of <code>x</code>.</li>
+<li><code>list</code> or <code>list main</code>: will show our program with numbered lines.</li>
+</ul>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="further-reading"><a class="header" href="#further-reading">Further reading</a></h1>
+<ul>
+<li><a href="https://docs.rust-embedded.org/discovery-mb2/10-serial-port/index.html">Discovery MB2 - UART</a> a section with more detail than the one in this book.</li>
+<li><a href="https://www.ti.com/lit/an/sbaa565/sbaa565.pdf">TI I2C</a> section 3 on the protocol could be of interest.</li>
+</ul>
+<h2 id="other-useful-pages"><a class="header" href="#other-useful-pages">Other useful pages</a></h2>
+<ul>
+<li><a href="https://github.com/esp-rs/awesome-esp-rust">Awesome ESP Rust</a></li>
+<li><a href="https://matrix.to/#/#esp-rs:matrix.org">esp-rs community</a> on Matrix</li>
+</ul>
+<!--Links used in this document-->
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+
+            </nav>
+
+        </div>
+
+        <template id=fa-eye><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M288 32c-80.8 0-145.5 36.8-192.6 80.6C48.6 156 17.3 208 2.5 243.7c-3.3 7.9-3.3 16.7 0 24.6C17.3 304 48.6 356 95.4 399.4C142.5 443.2 207.2 480 288 480s145.5-36.8 192.6-80.6c46.8-43.5 78.1-95.4 93-131.1c3.3-7.9 3.3-16.7 0-24.6c-14.9-35.7-46.2-87.7-93-131.1C433.5 68.8 368.8 32 288 32zM432 256c0 79.5-64.5 144-144 144s-144-64.5-144-144s64.5-144 144-144s144 64.5 144 144zM288 192c0 35.3-28.7 64-64 64c-11.5 0-22.3-3-31.6-8.4c-.2 2.8-.4 5.5-.4 8.4c0 53 43 96 96 96s96-43 96-96s-43-96-96-96c-2.8 0-5.6 .1-8.4 .4c5.3 9.3 8.4 20.1 8.4 31.6z"/></svg></span></template>
+        <template id=fa-eye-slash><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M38.8 5.1C28.4-3.1 13.3-1.2 5.1 9.2S-1.2 34.7 9.2 42.9l592 464c10.4 8.2 25.5 6.3 33.7-4.1s6.3-25.5-4.1-33.7L525.6 386.7c39.6-40.6 66.4-86.1 79.9-118.4c3.3-7.9 3.3-16.7 0-24.6c-14.9-35.7-46.2-87.7-93-131.1C465.5 68.8 400.8 32 320 32c-68.2 0-125 26.3-169.3 60.8L38.8 5.1zM223.1 149.5C248.6 126.2 282.7 112 320 112c79.5 0 144 64.5 144 144c0 24.9-6.3 48.3-17.4 68.7L408 294.5c5.2-11.8 8-24.8 8-38.5c0-53-43-96-96-96c-2.8 0-5.6 .1-8.4 .4c5.3 9.3 8.4 20.1 8.4 31.6c0 10.2-2.4 19.8-6.6 28.3l-90.3-70.8zm223.1 298L373 389.9c-16.4 6.5-34.3 10.1-53 10.1c-79.5 0-144-64.5-144-144c0-6.9 .5-13.6 1.4-20.2L83.1 161.5C60.3 191.2 44 220.8 34.5 243.7c-3.3 7.9-3.3 16.7 0 24.6c14.9 35.7 46.2 87.7 93 131.1C174.5 443.2 239.2 480 320 480c47.8 0 89.9-12.9 126.2-32.5z"/></svg></span></template>
+        <template id=fa-copy><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M502.6 70.63l-61.25-61.25C435.4 3.371 427.2 0 418.7 0H255.1c-35.35 0-64 28.66-64 64l.0195 256C192 355.4 220.7 384 256 384h192c35.2 0 64-28.8 64-64V93.25C512 84.77 508.6 76.63 502.6 70.63zM464 320c0 8.836-7.164 16-16 16H255.1c-8.838 0-16-7.164-16-16L239.1 64.13c0-8.836 7.164-16 16-16h128L384 96c0 17.67 14.33 32 32 32h47.1V320zM272 448c0 8.836-7.164 16-16 16H63.1c-8.838 0-16-7.164-16-16L47.98 192.1c0-8.836 7.164-16 16-16H160V128H63.99c-35.35 0-64 28.65-64 64l.0098 256C.002 483.3 28.66 512 64 512h192c35.2 0 64-28.8 64-64v-32h-47.1L272 448z"/></svg></span></template>
+        <template id=fa-play><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M73 39c-14.8-9.1-33.4-9.4-48.5-.9S0 62.6 0 80V432c0 17.4 9.4 33.4 24.5 41.9s33.7 8.1 48.5-.9L361 297c14.3-8.7 23-24.2 23-41s-8.7-32.2-23-41L73 39z"/></svg></span></template>
+        <template id=fa-clock-rotate-left><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M75 75L41 41C25.9 25.9 0 36.6 0 57.9V168c0 13.3 10.7 24 24 24H134.1c21.4 0 32.1-25.9 17-41l-30.8-30.8C155 85.5 203 64 256 64c106 0 192 86 192 192s-86 192-192 192c-40.8 0-78.6-12.7-109.7-34.4c-14.5-10.1-34.4-6.6-44.6 7.9s-6.6 34.4 7.9 44.6C151.2 495 201.7 512 256 512c141.4 0 256-114.6 256-256S397.4 0 256 0C185.3 0 121.3 28.7 75 75zm181 53c-13.3 0-24 10.7-24 24V256c0 6.4 2.5 12.5 7 17l72 72c9.4 9.4 24.6 9.4 33.9 0s9.4-24.6 0-33.9l-65-65V152c0-13.3-10.7-24-24-24z"/></svg></span></template>
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="elasticlunr-ef4e11c1.min.js"></script>
+        <script src="mark-09e88c2c.min.js"></script>
+        <script src="searcher-c2a407aa.js"></script>
+
+        <script src="clipboard-1626706a.min.js"></script>
+        <script src="highlight-abc7f01d.js"></script>
+        <script src="book-a0b12cfe.js"></script>
+
+        <!-- Custom JS scripts -->
+        <script src="./src/assets/mermaid.min.js"></script>
+        <script src="./src/assets/mermaid-init.js"></script>
+
+        <script>
+        window.addEventListener('load', function() {
+            window.setTimeout(window.print, 100);
+        });
+        </script>
+
+
+    </div>
+    </body>
+</html>

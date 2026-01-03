@@ -35,7 +35,7 @@ Within it, a module has a few more items, the key one being the SoC, short for S
     <a href="../assets/devkit-module-soc.png">
         <img alt="Breakdown of Devkit (or just Board) to Module, to SoC." src="../assets/devkit-module-soc.png"/>
     </a>
-    <p>Image from <a href="https://esp32.implrust.com/">implFerris/esp32-book</a> under <a href="https://creativecommons.org/licenses/by/4.0/">CC-BY-SA 4.0</a> </p>
+    <p>Image from <a href="https://esp32.implrust.com/esp32-intro/esp32-family.html">implFerris/esp32-book</a> under <a href="https://creativecommons.org/licenses/by/4.0/">CC-BY-SA 4.0</a> </p>
 </div>
 
 ## SoC
@@ -72,9 +72,10 @@ An explanation of how it all comes together is in the [micro:bit v2][MB2] book, 
 
 - [esp32-c6 user-guide]. It describes the board components, peripherals, and pinouts.
 - The [SoC datasheet], especially the product page, and the features (first 3 or 4 pages).
-- [esp32 tutorial] page on the distinction between DevKit (or Board), Module and SoC.
+- [implrust]'s page on the distinction between DevKit (or Board), Module and SoC.
 
 [esp32-c6 user-guide]: https://docs.espressif.com/projects/esp-dev-kits/en/latest/esp32c6/esp32-c6-devkitc-1/user_guide.html
 [MB2]: https://docs.rust-embedded.org/discovery-mb2/04-meet-your-hardware/microbit-v2.html
 [soc_or_mcu]: https://en.wikipedia.org/wiki/Microcontroller
 [SoC datasheet]: https://documentation.espressif.com/esp32-c6_datasheet_en.pdf
+[implrust]: https://esp32.implrust.com/esp32-intro/esp32-family.html

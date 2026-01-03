@@ -42,9 +42,9 @@ Including images, you may want to use the snippet:
 
 ```html
 <div class="center w320"> <!--other classes: w220, w420-->
-<!--Start with `/` following path from `src`.-->
-    <a href="/assets/<image_name>.jpg">
-        <img alt="Add Alt Description" src="/assets/<image_name>.jpg"/>
+<!--following path from source file.-->
+    <a href="../assets/<image_name>.jpg">
+        <img alt="Add Alt Description" src="../assets/<image_name>.jpg"/>
     </a>
     <p>Optional footer</p>
 </div>

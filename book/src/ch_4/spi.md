@@ -8,8 +8,7 @@ As different from I2C, there are 4 communication lines.
 
 <div class="center w320"> <!--other classes: w220, w420-->
 <!--Start with `/` following path from `src`.-->
-    <a href="/assets/spi.svg">
-        <img alt="Two devices connecting using the SPI lines." src="/assets/spi.svg"/>
+    <a href="../assets/spi.svg">
+        <img alt="Two devices connecting using the SPI lines." src="../assets/spi.svg"/>
     </a>
 </div>
-

@@ -8,8 +8,8 @@ The diagram below shows two UARTs wired for communication; each is connected to 
 
 <div class="center w320"> <!--other classes: w220, w420-->
 <!--Start with `/` following path from `src`.-->
-    <a href="/assets/uart.svg">
-        <img alt="Two UART devices with the cross connctions where each transmission line joins with the receiving line in the other device." src="/assets/uart.svg"/>
+    <a href="../assets/uart.svg">
+        <img alt="Two UART devices with the cross connctions where each transmission line joins with the receiving line in the other device." src="../assets/uart.svg"/>
     </a>
 </div>
 

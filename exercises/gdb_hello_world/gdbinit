@@ -1,0 +1,9 @@
+# The binary file from dev profile.
+# we could also pass the `target/...` path to the CLI.
+file target/riscv32imac-unknown-none-elf/release/gdb_hello_world
+# default port opened by openocd.
+target extended-remote localhost:3333
+monitor reset halt
+break gdb_hello_world::__risc_v_rt__main
+layout src
+continue

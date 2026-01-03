@@ -1,0 +1,29 @@
+# These are parts that extend the Cargo.toml I think.
+#
+[target.riscv32imac-unknown-none-elf]
+# `--chip esp32c6` isn't necessary, but we make it explicit
+# Removing`--monitor`, it flashes and exits.
+runner = "espflash flash --monitor --chip esp32c6"
+
+[build]
+rustflags = [ # compiler flags
+  "-C",
+  "link-arg=-Tlinkall.x",
+  "-C",                   # this option is due to esp-backtrace
+  "force-frame-pointers",
+]
+
+target = "riscv32imac-unknown-none-elf"
+
+# this is only used if we want to compile with nightly.
+# otherwise it is ignored.
+# [unstable]
+# build-std = ["core"]
+
+[profile.dev]
+opt-level = "s"
+
+[env]
+# levels are: error > warn > info > debug > trace > off
+ESP_LOG="info" # min level, i.e ignores DEBUG and TRACE logs.
+ESPFLASH_BAUD="115200"

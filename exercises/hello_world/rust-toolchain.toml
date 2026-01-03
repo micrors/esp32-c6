@@ -1,0 +1,8 @@
+[toolchain]
+# channel = "nightly"
+channel = "stable"
+# components = ["rust-src"]
+# ^^^^^^^^^^ only needed with nightly
+
+targets = ["riscv32imac-unknown-none-elf"]
+# ^^^^^ only needed with stable

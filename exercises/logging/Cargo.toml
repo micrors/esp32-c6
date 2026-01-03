@@ -1,0 +1,21 @@
+[package]
+name = "logging"
+version = "0.1.0"
+edition = "2024"
+license = "MIT"
+# previous author https://github.com/SergioGasquez
+authors = ["gh:iampi31415"]
+
+[dependencies]
+esp-hal = { version = "1.0.0",features = [
+    "esp32c6",
+    "unstable",
+] }
+esp-bootloader-esp-idf  = { version = "0.4.0", features = ["esp32c6"]}
+esp-println = { version = "0.16.1", features = [ "esp32c6", "log-04" ] }
+log = "0.4.29"
+esp-backtrace = { version = "0.18.1", features = [
+    "esp32c6",
+    "panic-handler",
+    "println"
+]}

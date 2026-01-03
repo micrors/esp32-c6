@@ -1,0 +1,22 @@
+[package]
+name = "blinky"
+version = "0.1.0"
+edition = "2024"
+license = "MIT"
+# previous author https://github.com/SergioGasquez
+authors = ["gh:iampi31415"]
+
+[dependencies]
+esp-hal = { version = "1.0.0", features = ["esp32c6"] }
+# Implements a panic! with println.
+esp-backtrace = { version = "0.18.1", features = [
+  "esp32c6",
+  "panic-handler",
+  "println",
+] }
+esp-bootloader-esp-idf = { version = "0.4.0", features = ["esp32c6"] }
+# for printing stuff
+esp-println = { version = "0.16.1", features = ["esp32c6", "log-04"] }
+
+[lints.clippy]
+empty_loop = "allow"

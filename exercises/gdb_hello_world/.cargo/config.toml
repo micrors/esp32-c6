@@ -1,0 +1,41 @@
+# the key != bw hello_world and this project
+# is that we run / flash with probe-rs
+[target.riscv32imac-unknown-none-elf]
+runner = "espflash flash"
+
+
+[build]
+rustflags = [ # compiler flags
+  "-C",
+  "link-arg=-Tlinkall.x",
+  "-C",                   # this option is due to esp-backtrace
+  "force-frame-pointers",
+   "-C",                  # helps reduce size of binary.
+  "inline-threshold=275",
+]
+
+target = "riscv32imac-unknown-none-elf"
+
+[unstable]
+build-std = ["core"]
+
+# [env]
+# ESP_LOG = "info"
+
+# 
+# Nice reads for the curious 
+# https://docs.rust-embedded.org/book/unsorted/speed-vs-size.html
+# https://github.com/rust-embedded/rust-embedded.github.io/blob/master/faq.md#my-embedded-rust-program-is-too-big
+# debug is true by default in `dev`
+[profile.dev]
+opt-level = 0               # To see the assembly code for our operations.
+overflow-checks = false     # Disable integer overflow checks.
+
+[profile.dev.package."*"]   # optimise all dependencies though (not our crate)
+codegen-units = 1           # apparently improves optimisation.
+opt-level = "z"             # for minimum size ("z"), for less optimised use "s"
+                            # and for speed optimized (but size may be large), 
+                            # use 1,2 or 3.
+[profile.release]
+debug=true
+opt-level="z"               # optimise the size as much as possible.

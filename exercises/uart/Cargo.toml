@@ -1,0 +1,33 @@
+[package]
+edition      = "2024"
+name         = "uart"
+rust-version = "1.92"
+version      = "0.1.0"
+authors = ["gh:iampi31415"]
+license      = "MIT"
+
+[[bin]]
+name = "discovery-esp32c6"
+path = "./src/bin/main.rs"
+
+[dependencies]
+esp-hal = { version = "1.0.0", features = ["esp32c6", "unstable"] }
+esp-bootloader-esp-idf = { version = "0.3.0", features = ["esp32c6"] }
+defmt = "1.0.1"
+esp-println = { version = "0.16.1", features = ["esp32c6", "defmt-espflash"] }
+esp-backtrace = { version = "0.18.1", features = ["esp32c6", "panic-handler", "defmt"] }
+
+
+[profile.dev]
+# Rust debug is too slow.
+# For debug builds always builds with some optimization
+opt-level = "s"
+
+[profile.release]
+codegen-units    = 1     # LLVM can perform better optimizations using a single thread
+debug            = 2
+debug-assertions = false
+incremental      = false
+lto              = 'fat'
+opt-level        = 's'
+overflow-checks  = false

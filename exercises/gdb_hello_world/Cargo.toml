@@ -1,0 +1,37 @@
+# for testing and debugging
+# we need either openocd/gdb or probe-rs/gdb.
+[package]
+name = "gdb_hello_world"
+version = "0.1.0"
+edition = "2024"
+rust-version = "1.92"
+license = "MIT"
+authors = ["gh:iampi31415"]
+
+[dependencies]
+log = "0.4.29"
+esp-bootloader-esp-idf = { version = "0.4.0", features = ["esp32c6"] }
+# to print
+critical-section = "1.2.0" # ?
+esp-backtrace = { version = "0.18.1", features = ["esp32c6", "panic-handler", "println"] }
+esp-println = { version = "0.16.1", features = ["log-04", "esp32c6"] }
+esp-hal = { version = "1.0.0", features = [
+  "log-04", # defmt or log
+  "esp32c6",
+  "unstable",
+] }
+
+
+[profile.dev]
+# Size-optimised
+opt-level = 0
+debug = true
+
+[profile.release]
+codegen-units = 1        # LLVM can perform better optimizations using a single thread
+debug = true
+debug-assertions = false
+incremental = false
+lto = 'fat'
+opt-level = 's'
+overflow-checks = false

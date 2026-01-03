@@ -1,0 +1,35 @@
+digraph {
+	fontname="Helvetica,Arial,sans-serif"
+    graph [
+     nodesep=1,
+     ranksep=0.9,
+     compound=true,
+     newrank=true
+    ];
+    rankdir=LR;
+    node [shape=record fontname="Helvetica,Arial,sans-serif" style="filled" fillcolor="#1199DD33"];
+
+    subgraph cluster_dev1 {
+        label="UART 1";
+        style="rounded,filled";
+        fillcolor=gray90;
+        margin=12;
+        Tx1
+        Rx1
+    }
+
+    subgraph cluster_dev2 {
+        label="UART 2";
+        style="rounded,filled";
+        fillcolor=gray90;
+        margin=12;
+        Tx2
+        Rx2
+        labelloc=b
+    }
+    // Bi-directional buses attaching to left side of cluster
+    Data_Bus_1 -> Tx1 [dir=both lhead=cluster_dev1 headport=w];
+    Data_Bus_2 -> Tx2 [dir=both lhead=cluster_dev2 headport=w];
+    Tx1 -> Rx2;
+    Tx2 -> Rx1;
+}

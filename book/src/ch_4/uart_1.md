@@ -6,23 +6,12 @@ _Asynchronous_ means that they don't have a dedicated clock line, since all it h
 
 The diagram below shows two UARTs wired for communication; each is connected to a local data bus.
 
-```mermaid
-graph LR
-    subgraph uart2 [UART 2]
-        direction TB
-        Tx2
-        Rx2
-    end
-    subgraph uart1 [UART 1]
-        direction TB
-        Tx1
-        Rx1
-    end
-    Tx1--> Rx2
-    Tx2--> Rx1
-    DB2[Data Bus 2] <--> uart2
-    DB1[Data Bus 1] <--> uart1
-```
+<div class="center w320"> <!--other classes: w220, w420-->
+<!--Start with `/` following path from `src`.-->
+    <a href="/assets/uart.svg">
+        <img alt="Two UART devices with the cross connctions where each transmission line joins with the receiving line in the other device." src="/assets/uart.svg"/>
+    </a>
+</div>
 
 A UART has two data lines: one transmits data (Tx), one receives data (Rx). Each connects to the complementary line on the other UART. For example, the Tx1 line of UART 1, to the Rx2 line of UART 2.
 

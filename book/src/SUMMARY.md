@@ -36,7 +36,7 @@
 - [UART I](./ch_4/uart_1.md)
 - [UART II](./ch_4/uart_2.md)
 - [I2C](./ch_4/i2c.md)
-- [SPI]() <!--draft-->
+- [SPI](./ch_4/spi.md)
 
 # Appendix
 

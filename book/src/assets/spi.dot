@@ -1,0 +1,34 @@
+digraph {
+	fontname="Helvetica,Arial,sans-serif"
+    graph [
+    nodesep=1,
+     ranksep=0.9,
+     compound=true,
+     newrank=true
+    ];
+  rankdir=TB;
+  node [shape=record fontname="Helvetica,Arial,sans-serif" style=filled fillcolor=white] ;
+  subgraph cluster_dev1 {
+    style="rounded, filled";
+    bgcolor="#1199DD33";
+    label="Device 1";
+    margin=12;
+    struct1 [
+      label = "<port1>MISO|<port2>MOSI|<port3>SCLK|<port4>SSCS";
+   ];
+ };
+  subgraph cluster_dev2 {
+    style="rounded, filled";
+    bgcolor="#11999933";
+    label="Device 2";
+    margin=12;
+    struct2 [
+      label ="<port1>MISO|<port2>MOSI|<port3>SCLK|<port4>SSCS";
+    ];
+    labelloc=b
+  };
+   struct1:port1 -> struct2:port1;
+   struct1:port2 -> struct2:port2;
+   struct2:port3 -> struct1:port3;
+   struct1:port4 -> struct2:port4;
+}
